@@ -12,6 +12,8 @@ import 'package:smsforward/widgets/custom_switch.dart';
 import 'package:smsforward/widgets/filter/channel_required_notice.dart';
 import 'package:smsforward/widgets/filter/keyword_field.dart';
 
+import '../../widgets/back_icon_button.dart';
+
 class AddFilterScreen extends StatefulWidget {
   const AddFilterScreen({super.key});
 
@@ -91,17 +93,7 @@ class _AddFilterScreenState extends State<AddFilterScreen> {
       appBar: AppBar(
         titleSpacing: -5,
         title: Text('필터 추가', style: textStyleW600(fontSize: 18)),
-        leading: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
-          child: IconButton(
-            onPressed: () => Navigator.pop(context),
-            icon: const Icon(
-              Icons.arrow_back_ios,
-              color: textSecondary,
-              size: 12,
-            ),
-          ),
-        ),
+        leading: const BackIconButton(),
       ),
       body: SafeArea(
         child: Padding(

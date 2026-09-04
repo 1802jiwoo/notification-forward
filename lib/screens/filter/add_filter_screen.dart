@@ -11,6 +11,7 @@ import 'package:smsforward/widgets/custom_long_text_fill_button.dart';
 import 'package:smsforward/widgets/custom_switch.dart';
 import 'package:smsforward/widgets/filter/channel_required_notice.dart';
 import 'package:smsforward/widgets/filter/keyword_field.dart';
+import 'package:smsforward/widgets/form_field_row.dart';
 
 import '../../widgets/back_icon_button.dart';
 
@@ -122,7 +123,7 @@ class _AddFilterScreenState extends State<AddFilterScreen> {
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _FilterFieldRow(
+        FormFieldRow(
           title: '이름',
           child: TextField(
             controller: nameController,
@@ -134,14 +135,14 @@ class _AddFilterScreenState extends State<AddFilterScreen> {
             ),
           ),
         ),
-        _FilterFieldRow(
+        FormFieldRow(
           title: '대상 앱',
           child: _TargetAppField(
             targetApps: targetApps,
             selectTargetApp: selectTargetApp,
           ),
         ),
-        _FilterFieldRow(
+        FormFieldRow(
           title: '발신번호',
           isPrimary: true,
           child: Column(
@@ -199,45 +200,6 @@ class _AddFilterScreenState extends State<AddFilterScreen> {
       ],
     ),
   );
-}
-
-class _FilterFieldRow extends StatelessWidget {
-  const _FilterFieldRow({
-    required this.title,
-    required this.child,
-    this.isPrimary = false,
-  });
-
-  final String title;
-  final Widget child;
-  final bool isPrimary;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 15),
-      decoration: const BoxDecoration(
-        border: Border(bottom: BorderSide(color: line)),
-      ),
-      child: Row(
-        crossAxisAlignment: isPrimary
-            ? CrossAxisAlignment.start
-            : CrossAxisAlignment.center,
-        children: [
-          SizedBox(
-            width: 100,
-            child: Text(
-              title,
-              style: isPrimary
-                  ? textStyleW600(color: primary)
-                  : textStyleW400(color: textTertiary),
-            ),
-          ),
-          Expanded(child: child),
-        ],
-      ),
-    );
-  }
 }
 
 class _TargetAppField extends StatelessWidget {

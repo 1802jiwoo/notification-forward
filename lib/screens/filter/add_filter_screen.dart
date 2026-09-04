@@ -1,0 +1,384 @@
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:smsforward/core/colors.dart';
+import 'package:smsforward/core/text_styles.dart';
+import 'package:smsforward/models/channel/channel.dart';
+import 'package:smsforward/models/filter/keyword_match_target.dart';
+import 'package:smsforward/models/installed_app.dart';
+import 'package:smsforward/provider/channel_provider.dart';
+import 'package:smsforward/screens/filter/select_target_app_screen.dart';
+import 'package:smsforward/widgets/custom_long_text_fill_button.dart';
+import 'package:smsforward/widgets/custom_switch.dart';
+import 'package:smsforward/widgets/filter/channel_required_notice.dart';
+import 'package:smsforward/widgets/filter/keyword_field.dart';
+
+class AddFilterScreen extends StatefulWidget {
+  const AddFilterScreen({super.key});
+
+  @override
+  State<AddFilterScreen> createState() => _AddFilterScreenState();
+}
+
+class _AddFilterScreenState extends State<AddFilterScreen> {
+  late final List<Channel> channels;
+
+  final TextEditingController nameController = TextEditingController();
+  List<InstalledApp> targetApps = [];
+  final TextEditingController phoneNumberController = TextEditingController();
+  List<String> keywords = [];
+  KeywordMatchTarget keywordTarget = KeywordMatchTarget.titleOrBody;
+  int? selectedChannelId;
+  bool isActive = true;
+
+  @override
+  void initState() {
+    super.initState();
+    channels = context.read<ChannelProvider>().channels;
+  }
+
+  @override
+  void dispose() {
+    nameController.dispose();
+    phoneNumberController.dispose();
+    super.dispose();
+  }
+
+  Future<void> saveFilter() async {}
+
+  Future<void> selectTargetApp() async {
+    final result = await Navigator.push<List<InstalledApp>>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => SelectTargetAppScreen(targetApps: targetApps),
+      ),
+    );
+    if (result != null) {
+      setState(() => targetApps = result);
+    }
+  }
+
+  void selectKeywordTarget(KeywordMatchTarget target) {
+    setState(() {
+      keywordTarget = target;
+    });
+  }
+
+  void addKeyword(String rawKeyword) {
+    final keyword = rawKeyword.replaceAll(',', '').trim();
+    if (keyword.isEmpty) return;
+    if (keywords.length >= 5) {
+      // TODO 키워드 갯수 5개 이상 불가 경고
+      return;
+    }
+    if (keywords.contains(keyword)) {
+      // TODO 같은 키워드 등록 불가 경고
+      return;
+    }
+    setState(() {
+      keywords.add(keyword);
+    });
+  }
+
+  void removeKeyword(String keyword) {
+    setState(() {
+      keywords.remove(keyword);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        titleSpacing: -5,
+        title: Text('필터 추가', style: textStyleW600(fontSize: 18)),
+        leading: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+          child: IconButton(
+            onPressed: () => Navigator.pop(context),
+            icon: const Icon(
+              Icons.arrow_back_ios,
+              color: textSecondary,
+              size: 12,
+            ),
+          ),
+        ),
+      ),
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: channels.isEmpty
+              ? const ChannelRequiredNotice()
+              : Stack(
+                  children: [
+                    Positioned.fill(child: _filterForm()),
+                    Align(
+                      alignment: Alignment.bottomCenter,
+                      child: CustomLongTextFillButton(
+                        title: '저장',
+                        callback: saveFilter,
+                      ),
+                    ),
+                  ],
+                ),
+        ),
+      ),
+    );
+  }
+
+  Widget _filterForm() => SingleChildScrollView(
+    padding: const EdgeInsets.only(bottom: 130),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _FilterFieldRow(
+          title: '이름',
+          child: TextField(
+            controller: nameController,
+            decoration: InputDecoration(
+              isCollapsed: true,
+              border: InputBorder.none,
+              hintText: '필터 이름을 입력하세요',
+              hintStyle: textStyleW500(color: textHint, fontSize: 15),
+            ),
+          ),
+        ),
+        _FilterFieldRow(
+          title: '대상 앱',
+          child: _TargetAppField(
+            targetApps: targetApps,
+            selectTargetApp: selectTargetApp,
+          ),
+        ),
+        _FilterFieldRow(
+          title: '발신번호',
+          isPrimary: true,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              TextField(
+                controller: phoneNumberController,
+                decoration: InputDecoration(
+                  isCollapsed: true,
+                  border: InputBorder.none,
+                  hintText: '1234-1234, 12341234',
+                  hintStyle: textStyleW500(color: textHint, fontSize: 15),
+                ),
+              ),
+              Text(
+                '비워두면 모든 번호 허용',
+                style: textStyleW400(color: textTertiary, fontSize: 12),
+              ),
+            ],
+          ),
+        ),
+        KeywordField(
+          keywordTarget: keywordTarget,
+          keywords: keywords,
+          selectKeywordTarget: selectKeywordTarget,
+          addKeyword: addKeyword,
+          removeKeyword: removeKeyword,
+        ),
+        _ChannelField(
+          channels: channels,
+          selectedChannelId: selectedChannelId,
+          selectChannel: (id) {
+            setState(() {
+              selectedChannelId = id;
+            });
+          },
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 15),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text('활성화', style: textStyleW600(fontSize: 16)),
+              CustomSwitch(
+                isActive: isActive,
+                onChanged: (value) {
+                  setState(() {
+                    isActive = value;
+                  });
+                },
+              ),
+            ],
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
+class _FilterFieldRow extends StatelessWidget {
+  const _FilterFieldRow({
+    required this.title,
+    required this.child,
+    this.isPrimary = false,
+  });
+
+  final String title;
+  final Widget child;
+  final bool isPrimary;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 15),
+      decoration: const BoxDecoration(
+        border: Border(bottom: BorderSide(color: line)),
+      ),
+      child: Row(
+        crossAxisAlignment: isPrimary
+            ? CrossAxisAlignment.start
+            : CrossAxisAlignment.center,
+        children: [
+          SizedBox(
+            width: 100,
+            child: Text(
+              title,
+              style: isPrimary
+                  ? textStyleW600(color: primary)
+                  : textStyleW400(color: textTertiary),
+            ),
+          ),
+          Expanded(child: child),
+        ],
+      ),
+    );
+  }
+}
+
+class _TargetAppField extends StatelessWidget {
+  const _TargetAppField({
+    required this.targetApps,
+    required this.selectTargetApp,
+  });
+
+  final List<InstalledApp> targetApps;
+  final VoidCallback selectTargetApp;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      behavior: HitTestBehavior.translucent,
+      onTap: selectTargetApp,
+      child: Row(
+        children: [
+          Expanded(
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.only(right: 10),
+              child: Row(
+                spacing: 10,
+                children: [
+                  if (targetApps.isEmpty) const _AppItem(),
+                  for (var app in targetApps) _AppItem(app: app),
+                ],
+              ),
+            ),
+          ),
+          const Icon(Icons.arrow_forward_ios, size: 12, color: textHint),
+        ],
+      ),
+    );
+  }
+}
+
+class _AppItem extends StatelessWidget {
+  const _AppItem({this.app});
+
+  final InstalledApp? app;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      spacing: 10,
+      children: [
+        Container(
+          width: 30,
+          height: 30,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+            color: app == null ? primaryContainer : null,
+            image: app == null
+                ? null
+                : DecorationImage(image: MemoryImage(app!.icon)),
+          ),
+        ),
+        Text(app == null ? '모든 앱' : app!.appName, style: textStyleW500()),
+      ],
+    );
+  }
+}
+
+class _ChannelField extends StatelessWidget {
+  const _ChannelField({
+    required this.channels,
+    required this.selectedChannelId,
+    required this.selectChannel,
+  });
+
+  final List<Channel> channels;
+  final int? selectedChannelId;
+  final ValueChanged<int> selectChannel;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Text('보낼 채널', style: textStyleW600(color: textTertiary)),
+        for (var channel in channels)
+          _ChannelItem(
+            channel: channel,
+            selectedChannelId: selectedChannelId,
+            selectChannel: selectChannel,
+          ),
+      ],
+    );
+  }
+}
+
+class _ChannelItem extends StatelessWidget {
+  const _ChannelItem({
+    required this.channel,
+    this.selectedChannelId,
+    required this.selectChannel,
+  });
+
+  final Channel channel;
+  final int? selectedChannelId;
+  final ValueChanged<int> selectChannel;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      height: 80,
+      decoration: const BoxDecoration(
+        border: Border(bottom: BorderSide(color: line)),
+      ),
+      child: Row(
+        spacing: 15,
+        children: [
+          Checkbox(
+            visualDensity: const VisualDensity(horizontal: -4, vertical: -4),
+            value: channel.id == selectedChannelId,
+            activeColor: primary,
+            side: const BorderSide(color: line2, width: 1.5),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(5),
+            ),
+            onChanged: (value) => selectChannel(channel.id),
+          ),
+          Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
+            child: const Icon(Icons.discord, color: primary),
+          ),
+          Text(channel.name, style: textStyleW600(fontSize: 16)),
+        ],
+      ),
+    );
+  }
+}

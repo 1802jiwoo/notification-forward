@@ -1,0 +1,20 @@
+import 'package:flutter/cupertino.dart';
+import 'package:smsforward/models/filter/filter.dart';
+import 'package:smsforward/repository/filter_repository.dart';
+
+class FilterProvider extends ChangeNotifier {
+  final FilterRepository filterRepository = FilterRepository();
+  List<Filter> _filters = [];
+
+  List<Filter> get filters => _filters;
+
+  Future<void> loadFilters() async {
+    _filters = await filterRepository.loadFilters();
+    notifyListeners();
+  }
+
+  Future<void> addFilter(Filter filter) async {
+    await filterRepository.addFilter(filter);
+    await loadFilters();
+  }
+}

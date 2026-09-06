@@ -18,27 +18,30 @@ class CustomBottomSheet extends StatelessWidget {
         color: Colors.white,
         boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 25)],
       ),
-      child: SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 15),
-              child: Center(
-                child: SizedBox(
-                  width: 40,
-                  height: 4,
-                  child: DecoratedBox(
-                    decoration: BoxDecoration(
-                      color: line,
-                      borderRadius: BorderRadius.circular(200),
+      child: Material(
+        color: Colors.transparent,
+        child: SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 15),
+                child: Center(
+                  child: SizedBox(
+                    width: 40,
+                    height: 4,
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        color: line,
+                        borderRadius: BorderRadius.circular(200),
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
-            child,
-          ],
+              child,
+            ],
+          ),
         ),
       ),
     );

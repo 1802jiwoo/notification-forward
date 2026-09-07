@@ -8,11 +8,13 @@ class FormFieldRow extends StatelessWidget {
     super.key,
     required this.title,
     required this.child,
+    this.titleWidth = 90,
     this.isPrimary = false,
   });
 
   final String title;
   final Widget child;
+  final double? titleWidth;
   final bool isPrimary;
 
   @override
@@ -23,12 +25,10 @@ class FormFieldRow extends StatelessWidget {
         border: Border(bottom: BorderSide(color: line)),
       ),
       child: Row(
-        crossAxisAlignment: isPrimary
-            ? CrossAxisAlignment.start
-            : CrossAxisAlignment.center,
+        spacing: 10,
         children: [
           SizedBox(
-            width: 100,
+            width: titleWidth,
             child: Text(
               title,
               style: isPrimary

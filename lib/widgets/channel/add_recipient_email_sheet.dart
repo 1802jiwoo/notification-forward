@@ -6,23 +6,23 @@ import 'package:smsforward/widgets/tag_chip.dart';
 import '../../core/colors.dart';
 import '../../core/text_styles.dart';
 
-class AddKeywordSheet extends StatefulWidget {
-  const AddKeywordSheet({
+class AddRecipientEmailSheet extends StatefulWidget {
+  const AddRecipientEmailSheet({
     super.key,
-    required this.keywords,
-    required this.addKeyword,
-    required this.removeKeyword,
+    required this.recipientEmails,
+    required this.onAdd,
+    required this.onRemove,
   });
 
-  final List<String> keywords;
-  final ValueChanged<String> addKeyword;
-  final ValueChanged<String> removeKeyword;
+  final List<String> recipientEmails;
+  final ValueChanged<String> onAdd;
+  final ValueChanged<String> onRemove;
 
   @override
-  State<AddKeywordSheet> createState() => _AddKeywordSheetState();
+  State<AddRecipientEmailSheet> createState() => _AddRecipientEmailSheetState();
 }
 
-class _AddKeywordSheetState extends State<AddKeywordSheet> {
+class _AddRecipientEmailSheetState extends State<AddRecipientEmailSheet> {
   final controller = TextEditingController();
 
   @override
@@ -31,15 +31,15 @@ class _AddKeywordSheetState extends State<AddKeywordSheet> {
     super.dispose();
   }
 
-  void addKeyword() {
-    final keyword = controller.text;
+  void onAdd() {
+    final email = controller.text;
 
-    if (keyword.contains(',')) {
-      for (var value in keyword.split(',')) {
-        widget.addKeyword(value);
+    if (email.contains(',')) {
+      for (var value in email.split(',')) {
+        widget.onAdd(value);
       }
     } else {
-      widget.addKeyword(keyword);
+      widget.onAdd(email);
     }
 
     setState(() {
@@ -47,9 +47,9 @@ class _AddKeywordSheetState extends State<AddKeywordSheet> {
     });
   }
 
-  void removeKeyword(String keyword) {
+  void onRemove(String email) {
     setState(() {
-      widget.removeKeyword(keyword);
+      widget.onRemove(email);
     });
   }
 
@@ -62,9 +62,9 @@ class _AddKeywordSheetState extends State<AddKeywordSheet> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('키워드 추가', style: textStyleW600(fontSize: 18)),
+              Text('받는 사람 추가', style: textStyleW600(fontSize: 18)),
               Text(
-                '${widget.keywords.length}/5',
+                '${widget.recipientEmails.length}/5',
                 style: textStyleW400(color: textTertiary),
               ),
             ],
@@ -74,7 +74,7 @@ class _AddKeywordSheetState extends State<AddKeywordSheet> {
             controller: controller,
             onChanged: (value) {
               if (value.contains(',')) {
-                addKeyword();
+                onAdd();
               }
             },
             decoration: InputDecoration(
@@ -93,15 +93,15 @@ class _AddKeywordSheetState extends State<AddKeywordSheet> {
               ),
               suffixIcon: TextButton(
                 style: TextButton.styleFrom(overlayColor: Colors.transparent),
-                onPressed: addKeyword,
+                onPressed: onAdd,
                 child: Text('추가', style: textStyleW600(color: primary)),
               ),
-              helperText: '쉼표로 여러 개를 한 번에 넣을 수 있어요.',
+              helperText: '쉼표로 여러 주소를 한 번에 넣을 수 있어요.',
               helperStyle: textStyleW400(color: textTertiary, fontSize: 13),
             ),
           ),
           const SizedBox(height: 20),
-          Text('추가된 키워드', style: textStyleW600(color: textTertiary)),
+          Text('추가된 주소', style: textStyleW600(color: textTertiary)),
           const SizedBox(height: 10),
           SingleChildScrollView(
             clipBehavior: Clip.none,
@@ -109,8 +109,8 @@ class _AddKeywordSheetState extends State<AddKeywordSheet> {
             child: Row(
               spacing: 10,
               children: [
-                for (var keyword in widget.keywords)
-                  TagChip(label: keyword, onRemove: removeKeyword),
+                for (var email in widget.recipientEmails)
+                  TagChip(label: email, onRemove: onRemove),
               ],
             ),
           ),
@@ -125,23 +125,23 @@ class _AddKeywordSheetState extends State<AddKeywordSheet> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('이렇게 걸러져요', style: textStyleW600(color: textTertiary)),
+                Text('이렇게 보내져요', style: textStyleW600(color: textTertiary)),
                 const SizedBox(height: 5),
                 RichText(
                   text: TextSpan(
                     style: textStyleW400(color: textSecondary),
                     children: [
-                      const TextSpan(text: '키워드 중 '),
+                      const TextSpan(text: '추가한 주소 '),
                       TextSpan(
-                        text: '하나라도',
+                        text: '전체',
                         style: textStyleW700(color: textSecondary),
                       ),
-                      const TextSpan(text: ' 들어 있으면 전달합니다.\n예: "[Web발신] 카드 '),
+                      const TextSpan(text: '에게 같은 알림이 갑니다.\n보내는 주소는 '),
                       TextSpan(
-                        text: '승인',
+                        text: '이전에 입력한 주소',
                         style: textStyleW700(color: primary),
                       ),
-                      const TextSpan(text: ' 5,600원" → 전달'),
+                      const TextSpan(text: '로 표시돼요.'),
                     ],
                   ),
                 ),

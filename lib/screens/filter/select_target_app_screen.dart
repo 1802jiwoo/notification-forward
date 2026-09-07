@@ -6,7 +6,7 @@ import 'package:smsforward/widgets/back_icon_button.dart';
 
 import '../../core/colors.dart';
 import '../../core/text_styles.dart';
-import '../../widgets/custom_long_text_fill_button.dart';
+import '../../widgets/custom_long_text_button.dart';
 
 class SelectTargetAppScreen extends StatefulWidget {
   const SelectTargetAppScreen({super.key, required this.targetApps});
@@ -90,7 +90,7 @@ class _SelectTargetAppScreenState extends State<SelectTargetAppScreen> {
               ),
               Align(
                 alignment: Alignment.bottomCenter,
-                child: CustomLongTextFillButton(
+                child: CustomLongTextButton(
                   title: '선택 완료',
                   callback: () => Navigator.pop(context, targetApps),
                 ),

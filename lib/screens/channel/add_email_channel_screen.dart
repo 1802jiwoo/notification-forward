@@ -27,10 +27,14 @@ class _AddEmailChannelScreenState extends State<AddEmailChannelScreen> {
   @override
   void dispose() {
     nameController.dispose();
+    senderEmailController.dispose();
+    smtpHostController.dispose();
+    smtpPortController.dispose();
+    appPasswordController.dispose();
     super.dispose();
   }
 
-  Future<void> saveEmailChannel() async {}
+  Future<void> saveChannel() async {}
 
   Future<void> sendTest() async {}
 
@@ -103,7 +107,7 @@ class _AddEmailChannelScreenState extends State<AddEmailChannelScreen> {
                     Expanded(
                       child: CustomLongTextButton(
                         title: '저장',
-                        callback: saveEmailChannel,
+                        callback: saveChannel,
                       ),
                     ),
                   ],

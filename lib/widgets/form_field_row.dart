@@ -26,14 +26,18 @@ class FormFieldRow extends StatelessWidget {
       ),
       child: Row(
         spacing: 10,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(
-            width: titleWidth,
-            child: Text(
-              title,
-              style: isPrimary
-                  ? textStyleW600(color: primary)
-                  : textStyleW400(color: textTertiary),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 2),
+            child: SizedBox(
+              width: titleWidth,
+              child: Text(
+                title,
+                style: isPrimary
+                    ? textStyleW600(color: primary)
+                    : textStyleW400(color: textTertiary),
+              ),
             ),
           ),
           Expanded(child: child),

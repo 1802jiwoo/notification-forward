@@ -7,10 +7,15 @@ import 'package:smsforward/models/filter/keyword_match_target.dart';
 import 'package:smsforward/models/installed_app.dart';
 import 'package:smsforward/provider/channel_provider.dart';
 import 'package:smsforward/screens/filter/select_target_app_screen.dart';
-import 'package:smsforward/widgets/custom_long_text_fill_button.dart';
+import 'package:smsforward/widgets/custom_long_text_button.dart';
 import 'package:smsforward/widgets/custom_switch.dart';
 import 'package:smsforward/widgets/filter/channel_required_notice.dart';
-import 'package:smsforward/widgets/filter/keyword_field.dart';
+import 'package:smsforward/widgets/form_field_row.dart';
+
+import '../../widgets/back_icon_button.dart';
+import '../../widgets/custom_text_fill_button.dart';
+import '../../widgets/filter/add_keyword_sheet.dart';
+import '../../widgets/tag_chip_list_field.dart';
 
 class AddFilterScreen extends StatefulWidget {
   const AddFilterScreen({super.key});
@@ -63,20 +68,32 @@ class _AddFilterScreenState extends State<AddFilterScreen> {
     });
   }
 
-  void addKeyword(String rawKeyword) {
-    final keyword = rawKeyword.replaceAll(',', '').trim();
-    if (keyword.isEmpty) return;
-    if (keywords.length >= 5) {
-      // TODO 키워드 갯수 5개 이상 불가 경고
-      return;
-    }
-    if (keywords.contains(keyword)) {
-      // TODO 같은 키워드 등록 불가 경고
-      return;
-    }
-    setState(() {
-      keywords.add(keyword);
-    });
+  void addKeyword() {
+    showModalBottomSheet(
+      context: context,
+      barrierColor: Colors.white60,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (context) => AddKeywordSheet(
+        keywords: keywords,
+        addKeyword: (value) {
+          final keyword = value.replaceAll(',', '').trim();
+          if (keyword.isEmpty) return;
+          if (keywords.length >= 5) {
+            // TODO 키워드 갯수 5개 이상 불가 경고
+            return;
+          }
+          if (keywords.contains(keyword)) {
+            // TODO 같은 키워드 등록 불가 경고
+            return;
+          }
+          setState(() {
+            keywords.add(keyword);
+          });
+        },
+        removeKeyword: removeKeyword,
+      ),
+    );
   }
 
   void removeKeyword(String keyword) {
@@ -91,17 +108,7 @@ class _AddFilterScreenState extends State<AddFilterScreen> {
       appBar: AppBar(
         titleSpacing: -5,
         title: Text('필터 추가', style: textStyleW600(fontSize: 18)),
-        leading: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
-          child: IconButton(
-            onPressed: () => Navigator.pop(context),
-            icon: const Icon(
-              Icons.arrow_back_ios,
-              color: textSecondary,
-              size: 12,
-            ),
-          ),
-        ),
+        leading: const BackIconButton(),
       ),
       body: SafeArea(
         child: Padding(
@@ -113,7 +120,7 @@ class _AddFilterScreenState extends State<AddFilterScreen> {
                     Positioned.fill(child: _filterForm()),
                     Align(
                       alignment: Alignment.bottomCenter,
-                      child: CustomLongTextFillButton(
+                      child: CustomLongTextButton(
                         title: '저장',
                         callback: saveFilter,
                       ),
@@ -130,7 +137,7 @@ class _AddFilterScreenState extends State<AddFilterScreen> {
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _FilterFieldRow(
+        FormFieldRow(
           title: '이름',
           child: TextField(
             controller: nameController,
@@ -142,14 +149,14 @@ class _AddFilterScreenState extends State<AddFilterScreen> {
             ),
           ),
         ),
-        _FilterFieldRow(
+        FormFieldRow(
           title: '대상 앱',
           child: _TargetAppField(
             targetApps: targetApps,
             selectTargetApp: selectTargetApp,
           ),
         ),
-        _FilterFieldRow(
+        FormFieldRow(
           title: '발신번호',
           isPrimary: true,
           child: Column(
@@ -171,12 +178,12 @@ class _AddFilterScreenState extends State<AddFilterScreen> {
             ],
           ),
         ),
-        KeywordField(
+        _KeywordField(
           keywordTarget: keywordTarget,
           keywords: keywords,
           selectKeywordTarget: selectKeywordTarget,
-          addKeyword: addKeyword,
-          removeKeyword: removeKeyword,
+          onAdd: addKeyword,
+          onRemove: removeKeyword,
         ),
         _ChannelField(
           channels: channels,
@@ -207,45 +214,6 @@ class _AddFilterScreenState extends State<AddFilterScreen> {
       ],
     ),
   );
-}
-
-class _FilterFieldRow extends StatelessWidget {
-  const _FilterFieldRow({
-    required this.title,
-    required this.child,
-    this.isPrimary = false,
-  });
-
-  final String title;
-  final Widget child;
-  final bool isPrimary;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 15),
-      decoration: const BoxDecoration(
-        border: Border(bottom: BorderSide(color: line)),
-      ),
-      child: Row(
-        crossAxisAlignment: isPrimary
-            ? CrossAxisAlignment.start
-            : CrossAxisAlignment.center,
-        children: [
-          SizedBox(
-            width: 100,
-            child: Text(
-              title,
-              style: isPrimary
-                  ? textStyleW600(color: primary)
-                  : textStyleW400(color: textTertiary),
-            ),
-          ),
-          Expanded(child: child),
-        ],
-      ),
-    );
-  }
 }
 
 class _TargetAppField extends StatelessWidget {
@@ -307,6 +275,55 @@ class _AppItem extends StatelessWidget {
         ),
         Text(app == null ? '모든 앱' : app!.appName, style: textStyleW500()),
       ],
+    );
+  }
+}
+
+class _KeywordField extends StatelessWidget {
+  const _KeywordField({
+    required this.keywordTarget,
+    required this.keywords,
+    required this.selectKeywordTarget,
+    required this.onAdd,
+    required this.onRemove,
+  });
+
+  final KeywordMatchTarget keywordTarget;
+  final List<String> keywords;
+  final ValueChanged<KeywordMatchTarget> selectKeywordTarget;
+  final VoidCallback onAdd;
+  final ValueChanged<String> onRemove;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 15),
+      child: Column(
+        spacing: 10,
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          TagChipListField(
+            label: '키워드',
+            items: keywords,
+            onAdd: onAdd,
+            onRemove: onRemove,
+          ),
+          Row(
+            spacing: 10,
+            children: [
+              for (var target in KeywordMatchTarget.values)
+                Expanded(
+                  child: CustomFillTextButton(
+                    title: target.label,
+                    isEnabled: keywordTarget == target,
+                    callback: () => selectKeywordTarget(target),
+                  ),
+                ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }

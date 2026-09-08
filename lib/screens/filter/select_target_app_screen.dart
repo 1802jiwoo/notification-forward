@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:smsforward/models/installed_app.dart';
 import 'package:smsforward/provider/installed_apps_provider.dart';
+import 'package:smsforward/widgets/back_icon_button.dart';
 
 import '../../core/colors.dart';
 import '../../core/text_styles.dart';
-import '../../widgets/custom_long_text_fill_button.dart';
+import '../../widgets/custom_long_text_button.dart';
 
 class SelectTargetAppScreen extends StatefulWidget {
   const SelectTargetAppScreen({super.key, required this.targetApps});
@@ -35,17 +36,7 @@ class _SelectTargetAppScreenState extends State<SelectTargetAppScreen> {
       appBar: AppBar(
         titleSpacing: -5,
         title: Text('대상 앱', style: textStyleW600(fontSize: 18)),
-        leading: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
-          child: IconButton(
-            onPressed: () => Navigator.pop(context),
-            icon: const Icon(
-              Icons.arrow_back_ios,
-              color: textSecondary,
-              size: 12,
-            ),
-          ),
-        ),
+        leading: const BackIconButton(),
         actionsPadding: const EdgeInsets.symmetric(horizontal: 20),
         actions: [
           Text(
@@ -99,7 +90,7 @@ class _SelectTargetAppScreenState extends State<SelectTargetAppScreen> {
               ),
               Align(
                 alignment: Alignment.bottomCenter,
-                child: CustomLongTextFillButton(
+                child: CustomLongTextButton(
                   title: '선택 완료',
                   callback: () => Navigator.pop(context, targetApps),
                 ),

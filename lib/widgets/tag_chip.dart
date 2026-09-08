@@ -1,17 +1,13 @@
 import 'package:flutter/material.dart';
 
-import '../../core/colors.dart';
-import '../../core/text_styles.dart';
+import '../core/colors.dart';
+import '../core/text_styles.dart';
 
-class KeywordItem extends StatelessWidget {
-  const KeywordItem({
-    super.key,
-    required this.keyword,
-    required this.removeKeyword,
-  });
+class TagChip extends StatelessWidget {
+  const TagChip({super.key, required this.label, required this.onRemove});
 
-  final String keyword;
-  final ValueChanged<String> removeKeyword;
+  final String label;
+  final ValueChanged<String> onRemove;
 
   @override
   Widget build(BuildContext context) {
@@ -25,9 +21,9 @@ class KeywordItem extends StatelessWidget {
         spacing: 5,
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text(keyword, style: textStyleW500()),
+          Text(label, style: textStyleW500()),
           InkWell(
-            onTap: () => removeKeyword(keyword),
+            onTap: () => onRemove(label),
             child: const Icon(Icons.close, color: textPrimary, size: 20),
           ),
         ],

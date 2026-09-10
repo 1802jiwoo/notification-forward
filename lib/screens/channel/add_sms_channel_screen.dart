@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:provider/provider.dart';
 
 import '../../core/colors.dart';
 import '../../core/text_styles.dart';
+import '../../models/channel/channel_type.dart';
+import '../../models/channel/sms_channel.dart';
+import '../../provider/channel_provider.dart';
 import '../../widgets/back_icon_button.dart';
 import '../../widgets/custom_long_text_button.dart';
 import '../../widgets/form_field_row.dart';
@@ -16,8 +20,7 @@ class AddSmsChannelScreen extends StatefulWidget {
 
 class _AddSmsChannelScreenState extends State<AddSmsChannelScreen> {
   final TextEditingController nameController = TextEditingController();
-  final TextEditingController webhookURLController = TextEditingController();
-  final TextEditingController channelController = TextEditingController();
+  final TextEditingController recipientPhoneNumberController = TextEditingController();
   bool isSmsPermissionGranted = false;
 
   @override
@@ -32,12 +35,30 @@ class _AddSmsChannelScreenState extends State<AddSmsChannelScreen> {
   @override
   void dispose() {
     nameController.dispose();
-    webhookURLController.dispose();
-    channelController.dispose();
+    recipientPhoneNumberController.dispose();
     super.dispose();
   }
 
-  Future<void> saveChannel() async {}
+  Future<void> saveChannel() async {
+    final name = nameController.text.trim();
+    final recipientPhoneNumber = recipientPhoneNumberController.text.trim();
+    if (name.isEmpty || recipientPhoneNumber.isEmpty) {
+      // TODO 필수 항목 미입력 경고
+      return;
+    }
+
+    final channel = SmsChannel(
+      id: DateTime.now().millisecondsSinceEpoch,
+      type: ChannelType.sms,
+      name: name,
+      isActive: true,
+      recipientPhoneNumber: recipientPhoneNumber,
+    );
+
+    await context.read<ChannelProvider>().addChannel(channel);
+    if (!mounted) return;
+    Navigator.pop(context);
+  }
 
   Future<void> sendTest() async {}
 
@@ -114,7 +135,8 @@ class _AddSmsChannelScreenState extends State<AddSmsChannelScreen> {
       FormFieldRow(
         title: '받는 번호',
         child: TextField(
-          controller: nameController,
+          controller: recipientPhoneNumberController,
+          keyboardType: TextInputType.phone,
           decoration: InputDecoration(
             isCollapsed: true,
             border: InputBorder.none,

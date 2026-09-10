@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../../core/colors.dart';
 import '../../core/text_styles.dart';
+import '../../models/channel/channel_type.dart';
+import '../../models/channel/discord_channel.dart';
+import '../../provider/channel_provider.dart';
 import '../../widgets/back_icon_button.dart';
 import '../../widgets/custom_long_text_button.dart';
 import '../../widgets/form_field_row.dart';
@@ -24,7 +28,26 @@ class _AddDiscordChannelScreenState extends State<AddDiscordChannelScreen> {
     super.dispose();
   }
 
-  Future<void> saveChannel() async {}
+  Future<void> saveChannel() async {
+    final name = nameController.text.trim();
+    final webhookUrl = webhookURLController.text.trim();
+    if (name.isEmpty || webhookUrl.isEmpty) {
+      // TODO 필수 항목 미입력 경고
+      return;
+    }
+
+    final channel = DiscordChannel(
+      id: DateTime.now().millisecondsSinceEpoch,
+      type: ChannelType.discord,
+      name: name,
+      isActive: true,
+      webhookUrl: webhookUrl,
+    );
+
+    await context.read<ChannelProvider>().addChannel(channel);
+    if (!mounted) return;
+    Navigator.pop(context);
+  }
 
   Future<void> sendTest() async {}
 

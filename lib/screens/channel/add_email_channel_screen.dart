@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:smsforward/widgets/channel/add_recipient_email_sheet.dart';
 import 'package:smsforward/widgets/tag_chip_list_field.dart';
 import 'package:smsforward/widgets/back_icon_button.dart';
@@ -6,6 +7,9 @@ import 'package:smsforward/widgets/form_field_row.dart';
 
 import '../../core/colors.dart';
 import '../../core/text_styles.dart';
+import '../../models/channel/channel_type.dart';
+import '../../models/channel/email_channel.dart';
+import '../../provider/channel_provider.dart';
 import '../../widgets/custom_long_text_button.dart';
 
 class AddEmailChannelScreen extends StatefulWidget {
@@ -34,7 +38,38 @@ class _AddEmailChannelScreenState extends State<AddEmailChannelScreen> {
     super.dispose();
   }
 
-  Future<void> saveChannel() async {}
+  Future<void> saveChannel() async {
+    final name = nameController.text.trim();
+    final senderEmail = senderEmailController.text.trim();
+    final smtpHost = smtpHostController.text.trim();
+    final smtpPort = smtpPortController.text.trim();
+    final appPassword = appPasswordController.text.trim();
+    if (name.isEmpty ||
+        senderEmail.isEmpty ||
+        smtpHost.isEmpty ||
+        smtpPort.isEmpty ||
+        appPassword.isEmpty ||
+        recipientEmails.isEmpty) {
+      // TODO 필수 항목 미입력 경고
+      return;
+    }
+
+    final channel = EmailChannel(
+      id: DateTime.now().millisecondsSinceEpoch,
+      type: ChannelType.email,
+      name: name,
+      isActive: true,
+      senderEmail: senderEmail,
+      smtpHost: smtpHost,
+      smtpPort: smtpPort,
+      appPassword: appPassword,
+      recipientEmails: recipientEmails,
+    );
+
+    await context.read<ChannelProvider>().addChannel(channel);
+    if (!mounted) return;
+    Navigator.pop(context);
+  }
 
   Future<void> sendTest() async {}
 

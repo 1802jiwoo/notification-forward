@@ -10,12 +10,14 @@ class CustomLongTextButton extends StatelessWidget {
     required this.callback,
     this.showGradient = true,
     this.isFill = true,
+    this.enabled = true,
   });
 
   final String title;
   final VoidCallback callback;
   final bool showGradient;
   final bool isFill;
+  final bool enabled;
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +38,11 @@ class CustomLongTextButton extends StatelessWidget {
         width: double.infinity,
         height: 48,
         child: isFill
-            ? CustomFillTextButton(title: title, callback: callback)
+            ? CustomFillTextButton(
+                title: title,
+                callback: callback,
+                isEnabled: enabled,
+              )
             : CustomTextButton(title: title, callback: callback),
       ),
     );

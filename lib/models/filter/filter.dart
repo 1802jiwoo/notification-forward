@@ -9,7 +9,7 @@ class Filter {
   final KeywordMatchTarget keywordTarget;
   final List<int> channelIds;
   final bool isActive;
-  final InstalledApp? targetApp;
+  final List<InstalledApp> targetApps;
 
   Filter({
     required this.id,
@@ -19,6 +19,6 @@ class Filter {
     required this.keywordTarget,
     required this.channelIds,
     required this.isActive,
-    this.targetApp,
+    required this.targetApps,
   });
 }

@@ -81,7 +81,7 @@ types:
         index: 4
   Filter:
     typeId: 5
-    nextIndex: 8
+    nextIndex: 9
     fields:
       id:
         index: 0
@@ -97,8 +97,8 @@ types:
         index: 5
       isActive:
         index: 6
-      targetApp:
-        index: 7
+      targetApps:
+        index: 8
   KeywordMatchTarget:
     typeId: 6
     nextIndex: 3

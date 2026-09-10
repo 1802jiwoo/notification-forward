@@ -265,7 +265,7 @@ class FilterAdapter extends TypeAdapter<Filter> {
       keywordTarget: fields[4] as KeywordMatchTarget,
       channelIds: (fields[5] as List).cast<int>(),
       isActive: fields[6] as bool,
-      targetApp: fields[7] as InstalledApp?,
+      targetApps: (fields[8] as List).cast<InstalledApp>(),
     );
   }
 
@@ -287,8 +287,8 @@ class FilterAdapter extends TypeAdapter<Filter> {
       ..write(obj.channelIds)
       ..writeByte(6)
       ..write(obj.isActive)
-      ..writeByte(7)
-      ..write(obj.targetApp);
+      ..writeByte(8)
+      ..write(obj.targetApps);
   }
 
   @override

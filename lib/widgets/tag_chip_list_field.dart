@@ -27,7 +27,7 @@ class TagChipListField extends StatelessWidget {
         spacing: 10,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('받는 사람', style: textStyleW600(color: textTertiary)),
+          Text(label, style: textStyleW600(color: textTertiary)),
           SizedBox(
             width: double.infinity,
             child: Wrap(

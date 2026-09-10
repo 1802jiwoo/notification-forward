@@ -3,9 +3,11 @@ import 'package:provider/provider.dart';
 import 'package:smsforward/core/colors.dart';
 import 'package:smsforward/core/text_styles.dart';
 import 'package:smsforward/models/channel/channel.dart';
+import 'package:smsforward/models/filter/filter.dart';
 import 'package:smsforward/models/filter/keyword_match_target.dart';
 import 'package:smsforward/models/installed_app.dart';
 import 'package:smsforward/provider/channel_provider.dart';
+import 'package:smsforward/provider/filter_provider.dart';
 import 'package:smsforward/screens/filter/select_target_app_screen.dart';
 import 'package:smsforward/widgets/custom_long_text_button.dart';
 import 'package:smsforward/widgets/custom_switch.dart';
@@ -48,7 +50,29 @@ class _AddFilterScreenState extends State<AddFilterScreen> {
     super.dispose();
   }
 
-  Future<void> saveFilter() async {}
+  Future<void> saveFilter() async {
+    final name = nameController.text.trim();
+    final phoneNumber = phoneNumberController.text.trim();
+    if (name.isEmpty || selectedChannelId == null) {
+      // TODO 필수 항목 미입력 경고
+      return;
+    }
+
+    final filter = Filter(
+      id: DateTime.now().millisecondsSinceEpoch,
+      name: name,
+      phoneNumber: phoneNumber.isEmpty ? null : phoneNumber,
+      keywords: keywords,
+      keywordTarget: keywordTarget,
+      channelIds: [selectedChannelId!],
+      isActive: isActive,
+      targetApps: targetApps,
+    );
+
+    await context.read<FilterProvider>().addFilter(filter);
+    if (!mounted) return;
+    Navigator.pop(context);
+  }
 
   Future<void> selectTargetApp() async {
     final result = await Navigator.push<List<InstalledApp>>(
@@ -342,6 +366,7 @@ class _ChannelField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text('보낼 채널', style: textStyleW600(color: textTertiary)),
         for (var channel in channels)

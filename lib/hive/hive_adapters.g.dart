@@ -62,7 +62,7 @@ class DiscordChannelAdapter extends TypeAdapter<DiscordChannel> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return DiscordChannel(
-      id: (fields[1] as num).toInt(),
+      id: fields[1] as String,
       type: fields[2] as ChannelType,
       name: fields[3] as String,
       isActive: fields[4] as bool,
@@ -108,7 +108,7 @@ class EmailChannelAdapter extends TypeAdapter<EmailChannel> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return EmailChannel(
-      id: (fields[5] as num).toInt(),
+      id: fields[5] as String,
       type: fields[6] as ChannelType,
       name: fields[7] as String,
       isActive: fields[8] as bool,
@@ -166,7 +166,7 @@ class SlackChannelAdapter extends TypeAdapter<SlackChannel> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return SlackChannel(
-      id: (fields[1] as num).toInt(),
+      id: fields[1] as String,
       type: fields[2] as ChannelType,
       name: fields[3] as String,
       isActive: fields[4] as bool,
@@ -212,7 +212,7 @@ class SmsChannelAdapter extends TypeAdapter<SmsChannel> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return SmsChannel(
-      id: (fields[1] as num).toInt(),
+      id: fields[1] as String,
       type: fields[2] as ChannelType,
       name: fields[3] as String,
       isActive: fields[4] as bool,
@@ -258,12 +258,12 @@ class FilterAdapter extends TypeAdapter<Filter> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return Filter(
-      id: (fields[0] as num).toInt(),
+      id: fields[0] as String,
       name: fields[1] as String,
       phoneNumber: fields[2] as String?,
       keywords: (fields[3] as List).cast<String>(),
       keywordTarget: fields[4] as KeywordMatchTarget,
-      channelIds: (fields[5] as List).cast<int>(),
+      channelIds: (fields[5] as List).cast<String>(),
       isActive: fields[6] as bool,
       targetApps: (fields[8] as List).cast<InstalledApp>(),
     );

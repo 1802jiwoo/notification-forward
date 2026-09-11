@@ -17,4 +17,9 @@ class FilterProvider extends ChangeNotifier {
     await filterRepository.addFilter(filter);
     await loadFilters();
   }
+
+  Future<void> deleteFilter(String id) async {
+    await filterRepository.deleteFilter(id);
+    await loadFilters();
+  }
 }

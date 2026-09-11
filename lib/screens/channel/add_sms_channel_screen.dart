@@ -48,7 +48,7 @@ class _AddSmsChannelScreenState extends State<AddSmsChannelScreen> {
     }
 
     final channel = SmsChannel(
-      id: DateTime.now().millisecondsSinceEpoch,
+      id: DateTime.now().millisecondsSinceEpoch.toString(),
       type: ChannelType.sms,
       name: name,
       isActive: true,

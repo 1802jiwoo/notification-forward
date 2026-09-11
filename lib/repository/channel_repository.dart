@@ -9,6 +9,11 @@ class ChannelRepository {
 
   Future<void> addChannel(Channel channel) async {
     final box = await Hive.openBox<Channel>('channels');
-    await box.add(channel);
+    await box.put(channel.id, channel);
+  }
+
+  Future<void> deleteChannel(String id) async {
+    final box = await Hive.openBox<Channel>('channels');
+    await box.delete(id);
   }
 }

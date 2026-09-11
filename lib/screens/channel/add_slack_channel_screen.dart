@@ -39,7 +39,7 @@ class _AddSlackChannelScreenState extends State<AddSlackChannelScreen> {
     }
 
     final channel = SlackChannel(
-      id: DateTime.now().millisecondsSinceEpoch,
+      id: DateTime.now().millisecondsSinceEpoch.toString(),
       type: ChannelType.slack,
       name: name,
       isActive: true,

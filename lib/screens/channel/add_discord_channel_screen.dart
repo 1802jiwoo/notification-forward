@@ -37,7 +37,7 @@ class _AddDiscordChannelScreenState extends State<AddDiscordChannelScreen> {
     }
 
     final channel = DiscordChannel(
-      id: DateTime.now().millisecondsSinceEpoch,
+      id: DateTime.now().millisecondsSinceEpoch.toString(),
       type: ChannelType.discord,
       name: name,
       isActive: true,

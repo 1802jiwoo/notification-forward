@@ -55,7 +55,7 @@ class _AddEmailChannelScreenState extends State<AddEmailChannelScreen> {
     }
 
     final channel = EmailChannel(
-      id: DateTime.now().millisecondsSinceEpoch,
+      id: DateTime.now().millisecondsSinceEpoch.toString(),
       type: ChannelType.email,
       name: name,
       isActive: true,

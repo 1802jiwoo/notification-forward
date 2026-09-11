@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:smsforward/models/channel/channel.dart';
+import 'package:smsforward/provider/channel_provider.dart';
 import 'package:smsforward/widgets/channel/channel_type_ui.dart';
 
 import '../../core/colors.dart';
@@ -44,9 +46,10 @@ class ChannelItem extends StatelessWidget {
           onSelected: (value) {
             switch (value) {
               case ChannelMenuAction.edit:
+                // TODO 채널 수정 기능 추가
                 print('수정');
               case ChannelMenuAction.delete:
-                print('삭제');
+                context.read<ChannelProvider>().deleteChannel(channel.id);
             }
           },
           itemBuilder: (context) => [

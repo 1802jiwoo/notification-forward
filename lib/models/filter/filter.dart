@@ -2,12 +2,12 @@ import 'package:smsforward/models/filter/keyword_match_target.dart';
 import 'package:smsforward/models/installed_app.dart';
 
 class Filter {
-  final int id;
+  final String id;
   final String name;
   final String? phoneNumber;
   final List<String> keywords;
   final KeywordMatchTarget keywordTarget;
-  final List<int> channelIds;
+  final List<String> channelIds;
   final bool isActive;
   final List<InstalledApp> targetApps;
 

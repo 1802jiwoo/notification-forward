@@ -35,7 +35,7 @@ class _AddFilterScreenState extends State<AddFilterScreen> {
   final TextEditingController phoneNumberController = TextEditingController();
   List<String> keywords = [];
   KeywordMatchTarget keywordTarget = KeywordMatchTarget.titleOrBody;
-  int? selectedChannelId;
+  String? selectedChannelId;
   bool isActive = true;
 
   @override
@@ -60,7 +60,7 @@ class _AddFilterScreenState extends State<AddFilterScreen> {
     }
 
     final filter = Filter(
-      id: DateTime.now().millisecondsSinceEpoch,
+      id: DateTime.now().millisecondsSinceEpoch.toString(),
       name: name,
       phoneNumber: phoneNumber.isEmpty ? null : phoneNumber,
       keywords: keywords,
@@ -361,8 +361,8 @@ class _ChannelField extends StatelessWidget {
   });
 
   final List<Channel> channels;
-  final int? selectedChannelId;
-  final ValueChanged<int> selectChannel;
+  final String? selectedChannelId;
+  final ValueChanged<String> selectChannel;
 
   @override
   Widget build(BuildContext context) {
@@ -389,8 +389,8 @@ class _ChannelItem extends StatelessWidget {
   });
 
   final Channel channel;
-  final int? selectedChannelId;
-  final ValueChanged<int> selectChannel;
+  final String? selectedChannelId;
+  final ValueChanged<String> selectChannel;
 
   @override
   Widget build(BuildContext context) {

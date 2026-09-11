@@ -17,4 +17,9 @@ class ChannelProvider extends ChangeNotifier {
     await channelRepository.addChannel(channel);
     await loadChannels();
   }
+
+  Future<void> deleteChannel(String id) async {
+    await channelRepository.deleteChannel(id);
+    await loadChannels();
+  }
 }

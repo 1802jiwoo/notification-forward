@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:smsforward/models/channel/channel_type.dart';
+import 'package:smsforward/widgets/channel/channel_type_ui.dart';
 
 import '../../core/colors.dart';
 import '../../core/text_styles.dart';
@@ -6,15 +8,11 @@ import '../../core/text_styles.dart';
 class ChannelTypeItem extends StatelessWidget {
   const ChannelTypeItem({
     super.key,
-    required this.icon,
-    required this.title,
-    required this.subtitle,
+    required this.type,
     required this.onTap,
   });
 
-  final Widget icon;
-  final String title;
-  final String subtitle;
+  final ChannelType type;
   final VoidCallback onTap;
 
   @override
@@ -28,10 +26,10 @@ class ChannelTypeItem extends StatelessWidget {
         onTap: onTap,
         leading: ColorFiltered(
           colorFilter: const ColorFilter.mode(textSecondary, BlendMode.srcIn),
-          child: SizedBox(width: 24, child: icon),
+          child: SizedBox(width: 24, child: type.icon),
         ),
-        title: Text(title, style: textStyleW600(fontSize: 16)),
-        subtitle: Text(subtitle, style: textStyleW400(color: textTertiary)),
+        title: Text(type.title, style: textStyleW600(fontSize: 16)),
+        subtitle: Text(type.subtitle, style: textStyleW400(color: textTertiary)),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(15),
         ),

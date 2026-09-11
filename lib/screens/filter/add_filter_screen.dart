@@ -9,6 +9,7 @@ import 'package:smsforward/models/installed_app.dart';
 import 'package:smsforward/provider/channel_provider.dart';
 import 'package:smsforward/provider/filter_provider.dart';
 import 'package:smsforward/screens/filter/select_target_app_screen.dart';
+import 'package:smsforward/widgets/channel/channel_type_ui.dart';
 import 'package:smsforward/widgets/custom_long_text_button.dart';
 import 'package:smsforward/widgets/custom_switch.dart';
 import 'package:smsforward/widgets/filter/channel_required_notice.dart';
@@ -416,7 +417,10 @@ class _ChannelItem extends StatelessWidget {
             width: 40,
             height: 40,
             decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
-            child: const Icon(Icons.discord, color: primary),
+            child: ColorFiltered(
+              colorFilter: const ColorFilter.mode(textSecondary, BlendMode.srcIn),
+              child: SizedBox(width: 24, child: channel.type.icon),
+            ),
           ),
           Text(channel.name, style: textStyleW600(fontSize: 16)),
         ],

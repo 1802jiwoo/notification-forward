@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:smsforward/provider/channel_provider.dart';
+import 'package:smsforward/widgets/channel/channel_item.dart';
 import 'package:smsforward/widgets/channel/channel_type_item.dart';
 import 'package:smsforward/widgets/custom_bottom_sheet.dart';
 
@@ -32,7 +33,7 @@ class _ChannelScreenState extends State<ChannelScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final filters = context.watch<ChannelProvider>().channels;
+    final channel = context.watch<ChannelProvider>().channels;
 
     return Scaffold(
       appBar: AppBar(
@@ -43,9 +44,14 @@ class _ChannelScreenState extends State<ChannelScreen> {
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: filters.isEmpty
+        child: channel.isEmpty
             ? _EmptyChannel(addChannel: addChannel)
-            : const SizedBox(),
+            : ListView.builder(
+                padding: const EdgeInsets.symmetric(vertical: 10),
+                itemCount: channel.length,
+                itemBuilder: (context, index) =>
+                    ChannelItem(channel: channel[index], onTap: () {}),
+              ),
       ),
     );
   }
@@ -99,9 +105,7 @@ class _SelectChannelTypeSheet extends StatelessWidget {
               children: [
                 for (var type in ChannelType.values)
                   ChannelTypeItem(
-                    icon: type.icon,
-                    title: type.title,
-                    subtitle: type.subtitle,
+                    type: type,
                     onTap: () {
                       Navigator.pop(context);
                       Navigator.push(

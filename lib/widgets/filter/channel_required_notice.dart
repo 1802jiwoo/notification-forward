@@ -49,9 +49,7 @@ class _ChannelRequiredNoticeState extends State<ChannelRequiredNotice> {
           ),
           for (var type in ChannelType.values)
             ChannelTypeItem(
-              icon: type.icon,
-              title: type.title,
-              subtitle: type.subtitle,
+              type: type,
               onTap: () {
                 Navigator.push(
                   context,

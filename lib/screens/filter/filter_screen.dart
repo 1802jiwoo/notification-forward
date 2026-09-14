@@ -2,9 +2,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:smsforward/core/text_styles.dart';
+import 'package:smsforward/models/filter/filter.dart';
 import 'package:smsforward/provider/filter_provider.dart';
 import 'package:smsforward/screens/filter/add_filter_screen.dart';
 import 'package:smsforward/widgets/add_icon_button.dart';
+import 'package:smsforward/widgets/custom_switch.dart';
 
 import '../../core/colors.dart';
 import '../../widgets/custom_text_fill_button.dart';
@@ -26,7 +28,8 @@ class _FilterScreenState extends State<FilterScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final filters = context.watch<FilterProvider>().filters;
+    final filterProvider = context.watch<FilterProvider>();
+    final filters = filterProvider.filters;
 
     return Scaffold(
       appBar: AppBar(
@@ -39,7 +42,17 @@ class _FilterScreenState extends State<FilterScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 20),
         child: filters.isEmpty
             ? _EmptyFilter(addFilter: addFilter)
-            : const SizedBox(),
+            : ListView.separated(
+                padding: const EdgeInsets.symmetric(vertical: 10),
+                itemCount: filters.length,
+                separatorBuilder: (context, index) =>
+                    const SizedBox(height: 10),
+                itemBuilder: (context, index) => _FilterItem(
+                  filter: filters[index],
+                  onActive: () =>
+                      filterProvider.toggleFilterActive(filters[index].id),
+                ),
+              ),
       ),
     );
   }
@@ -70,6 +83,56 @@ class _EmptyFilter extends StatelessWidget {
             textAlign: TextAlign.center,
           ),
           CustomFillTextButton(title: '필터 추가하기', callback: () => addFilter()),
+        ],
+      ),
+    );
+  }
+}
+
+class _FilterItem extends StatelessWidget {
+  const _FilterItem({required this.filter, required this.onActive});
+
+  final Filter filter;
+  final VoidCallback onActive;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(15),
+      width: double.infinity,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(15),
+        border: Border.all(color: line),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(filter.name, style: textStyleW600(fontSize: 16)),
+                RichText(
+                  text: TextSpan(
+                    style: textStyleW400(color: textTertiary),
+                    children: [
+                      const TextSpan(text: '키워드 "'),
+                      for (var keyword in filter.keywords)
+                        TextSpan(
+                          text:
+                              keyword +
+                              (filter.keywords.last == keyword ? '' : ', '),
+                        ),
+                      const TextSpan(text: '"'),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          CustomSwitch(
+            isActive: filter.isActive,
+            onChanged: (value) => onActive(),
+          ),
         ],
       ),
     );

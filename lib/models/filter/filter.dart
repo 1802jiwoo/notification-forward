@@ -8,7 +8,7 @@ class Filter {
   final List<String> keywords;
   final KeywordMatchTarget keywordTarget;
   final List<String> channelIds;
-  final bool isActive;
+  bool isActive;
   final List<InstalledApp> targetApps;
 
   Filter({

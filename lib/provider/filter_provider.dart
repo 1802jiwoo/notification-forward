@@ -22,4 +22,11 @@ class FilterProvider extends ChangeNotifier {
     await filterRepository.deleteFilter(id);
     await loadFilters();
   }
+
+  Future<void> toggleFilterActive(String id) async {
+    final filter = _filters.firstWhere((filter) => filter.id == id);
+    filter.isActive = !filter.isActive;
+    await filterRepository.updateFilter(filter);
+    notifyListeners();
+  }
 }

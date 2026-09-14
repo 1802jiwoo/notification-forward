@@ -12,6 +12,11 @@ class FilterRepository {
     await box.put(filter.id, filter);
   }
 
+  Future<void> updateFilter(Filter filter) async {
+    final box = await Hive.openBox<Filter>('filters');
+    await box.put(filter.id, filter);
+  }
+
   Future<void> deleteFilter(String id) async {
     final box = await Hive.openBox<Filter>('filters');
     await box.delete(id);

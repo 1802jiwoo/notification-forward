@@ -19,43 +19,37 @@ class NotificationService : NotificationListenerService() {
         val channels = JSONArray(prefs.getString("channels", "[]")).toObjectList()
 
         if (filters.isEmpty()) return
+        if (sbn == null) return
 
-        if (sbn != null) {
-            val packageName = sbn.packageName
+        val packageName = sbn.packageName
+        val extras = sbn.notification.extras
+        val title = extras.getString(Notification.EXTRA_TITLE)
+        val text = extras.getString(Notification.EXTRA_TEXT)
 
-            for (filter in filters) {
-                val targetApps = filter.optJSONArray("targetApps")!!.toStringList()
+        for (filter in filters) {
+            val targetApps = filter.optJSONArray("targetApps")!!.toStringList()
+            if (targetApps.isNotEmpty() && !targetApps.contains(packageName)) continue
 
-                if (targetApps.isNotEmpty() && !targetApps.contains (packageName)) continue
-
-                val keywords = filter.optJSONArray("keywords")!!.toStringList()
-                for (keyword in keywords) {
-                    val extras = sbn.notification.extras
-
-                    val title = extras.getString(Notification.EXTRA_TITLE)
-                    val text = extras.getString(Notification.EXTRA_TEXT)
-
-                    val isMatched = when (filter.optString("keywordTarget")) {
-                        "titleOrBody" -> (title != null && title.contains(keyword)) || (text != null && text.contains(keyword))
-                        "titleOnly" -> title != null && title.contains(keyword)
-                        "bodyOnly" -> text != null && text.contains(keyword)
-                        else -> null
-                    }
-
-                    if (isMatched == true) {
-                        val channelId = filter.optString("channelId")
-                        val channel = channels.firstOrNull { it.optString("id") == channelId }!!
-                        when (channel.optString("type")) {
-                            "email" -> postEmail(extras)
-                            "discord" -> postDiscord(extras)
-                            "slack" -> postSlack(extras)
-                            "sms" -> postSms(extras)
-                        }
-                    }
+            val keywords = filter.optJSONArray("keywords")!!.toStringList()
+            val isMatched = keywords.any { keyword ->
+                when (filter.optString("keywordTarget")) {
+                    "titleOnly" -> title != null && title.contains(keyword)
+                    "bodyOnly" -> text != null && text.contains(keyword)
+                    else -> (title != null && title.contains(keyword)) || (text != null && text.contains(keyword))
                 }
             }
+
+            if (!isMatched) continue
+
+            val channelId = filter.optString("channelId")
+            val channel = channels.firstOrNull { it.optString("id") == channelId } ?: continue
+            when (channel.optString("type")) {
+                "email" -> postEmail(extras)
+                "discord" -> postDiscord(extras)
+                "slack" -> postSlack(extras)
+                "sms" -> postSms(extras)
+            }
         }
-        return
     }
 
     private fun postEmail(extras: Bundle) {

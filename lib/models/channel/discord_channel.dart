@@ -10,4 +10,12 @@ class DiscordChannel extends Channel {
     required super.isActive,
     required this.webhookUrl,
   });
+
+  @override
+  Map<String, dynamic> toMap() => {
+    'id': id,
+    'type': type.name,
+    'name': name,
+    'webhookUrl': webhookUrl,
+  };
 }

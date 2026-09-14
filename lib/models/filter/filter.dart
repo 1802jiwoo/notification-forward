@@ -21,4 +21,14 @@ class Filter {
     required this.isActive,
     required this.targetApps,
   });
+
+  Map<String, dynamic> toMap() => {
+    'id': id,
+    'name': name,
+    'phoneNumber': phoneNumber,
+    'keywords': keywords,
+    'keywordTarget': keywordTarget.name,
+    'channelIds': channelIds,
+    'targetApps': targetApps.map((app) => app.packageName).toList(),
+  };
 }

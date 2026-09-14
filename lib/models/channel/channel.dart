@@ -12,4 +12,6 @@ abstract class Channel {
     required this.name,
     required this.isActive,
   });
+
+  Map<String, dynamic> toMap();
 }

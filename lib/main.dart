@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hive_ce_flutter/adapters.dart';
 import 'package:provider/provider.dart';
+import 'package:smsforward/core/app_channel.dart';
 import 'package:smsforward/core/colors.dart';
 import 'package:smsforward/hive/hive_registrar.g.dart';
 import 'package:smsforward/provider/channel_provider.dart';
@@ -13,6 +14,8 @@ void main() async {
 
   await Hive.initFlutter();
   Hive.registerAdapters();
+
+  await AppChannel.instance.invokeMethod("notificationAccessSettings");
 
   runApp(
     MultiProvider(

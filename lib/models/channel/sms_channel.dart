@@ -10,4 +10,12 @@ class SmsChannel extends Channel {
     required super.isActive,
     required this.recipientPhoneNumber,
   });
+
+  @override
+  Map<String, dynamic> toMap() => {
+    'id': id,
+    'type': type.name,
+    'name': name,
+    'recipientPhoneNumber': recipientPhoneNumber,
+  };
 }

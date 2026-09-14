@@ -18,4 +18,16 @@ class EmailChannel extends Channel {
     required this.appPassword,
     required this.recipientEmails,
   });
+
+  @override
+  Map<String, dynamic> toMap() => {
+    'id': id,
+    'type': type.name,
+    'name': name,
+    'senderEmail': senderEmail,
+    'smtpHost': smtpHost,
+    'smtpPort': smtpPort,
+    'appPassword': appPassword,
+    'recipientEmails': recipientEmails,
+  };
 }

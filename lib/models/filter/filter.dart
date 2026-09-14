@@ -7,7 +7,7 @@ class Filter {
   final String? phoneNumber;
   final List<String> keywords;
   final KeywordMatchTarget keywordTarget;
-  final List<String> channelIds;
+  final String channelId;
   bool isActive;
   final List<InstalledApp> targetApps;
 
@@ -17,7 +17,7 @@ class Filter {
     this.phoneNumber,
     required this.keywords,
     required this.keywordTarget,
-    required this.channelIds,
+    required this.channelId,
     required this.isActive,
     required this.targetApps,
   });
@@ -28,7 +28,7 @@ class Filter {
     'phoneNumber': phoneNumber,
     'keywords': keywords,
     'keywordTarget': keywordTarget.name,
-    'channelIds': channelIds,
+    'channelId': channelId,
     'targetApps': targetApps.map((app) => app.packageName).toList(),
   };
 }

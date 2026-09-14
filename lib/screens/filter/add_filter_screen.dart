@@ -28,8 +28,6 @@ class AddFilterScreen extends StatefulWidget {
 }
 
 class _AddFilterScreenState extends State<AddFilterScreen> {
-  late final List<Channel> channels;
-
   final TextEditingController nameController = TextEditingController();
   List<InstalledApp> targetApps = [];
   final TextEditingController phoneNumberController = TextEditingController();
@@ -41,7 +39,6 @@ class _AddFilterScreenState extends State<AddFilterScreen> {
   @override
   void initState() {
     super.initState();
-    channels = context.read<ChannelProvider>().channels;
   }
 
   @override
@@ -65,7 +62,7 @@ class _AddFilterScreenState extends State<AddFilterScreen> {
       phoneNumber: phoneNumber.isEmpty ? null : phoneNumber,
       keywords: keywords,
       keywordTarget: keywordTarget,
-      channelIds: [selectedChannelId!],
+      channelId: selectedChannelId!,
       isActive: isActive,
       targetApps: targetApps,
     );
@@ -129,6 +126,8 @@ class _AddFilterScreenState extends State<AddFilterScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final channels = context.watch<ChannelProvider>().channels;
+
     return Scaffold(
       appBar: AppBar(
         titleSpacing: -5,
@@ -142,7 +141,7 @@ class _AddFilterScreenState extends State<AddFilterScreen> {
               ? const ChannelRequiredNotice()
               : Stack(
                   children: [
-                    Positioned.fill(child: _filterForm()),
+                    Positioned.fill(child: _filterForm(channels)),
                     Align(
                       alignment: Alignment.bottomCenter,
                       child: CustomLongTextButton(
@@ -157,7 +156,7 @@ class _AddFilterScreenState extends State<AddFilterScreen> {
     );
   }
 
-  Widget _filterForm() => SingleChildScrollView(
+  Widget _filterForm(List<Channel> channels) => SingleChildScrollView(
     padding: const EdgeInsets.only(bottom: 130),
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,

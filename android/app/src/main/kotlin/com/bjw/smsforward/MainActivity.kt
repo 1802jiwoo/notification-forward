@@ -1,6 +1,5 @@
 package com.bjw.smsforward
 
-import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
@@ -12,11 +11,13 @@ import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
 import org.json.JSONArray
 import java.io.ByteArrayOutputStream
+import androidx.core.content.edit
 
 class MainActivity : FlutterActivity() {
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
-        val prefs = context.getSharedPreferences("smsforward_data", Context.MODE_PRIVATE)
+        val prefs = context.getSharedPreferences("smsforward_data", MODE_PRIVATE)
+
         val methodChannel =
             MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "com.bjw.smsforward")
         methodChannel.setMethodCallHandler { call, result ->
@@ -48,7 +49,7 @@ class MainActivity : FlutterActivity() {
                 "notificationAccessSettings" -> {
                     val enabled = NotificationManagerCompat.getEnabledListenerPackages(context)
                         .contains(context.packageName)
-                    if(!enabled) {
+                    if (!enabled) {
                         startActivity(Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS))
                         result.success(true)
                     } else {
@@ -58,13 +59,13 @@ class MainActivity : FlutterActivity() {
 
                 "saveChannels" -> {
                     val channels = call.arguments as? List<*>
-                    prefs.edit().putString("channels", JSONArray(channels).toString()).apply()
+                    prefs.edit { putString("channels", JSONArray(channels).toString()) }
                     result.success(null)
                 }
 
                 "saveFilters" -> {
                     val filters = call.arguments as? List<*>
-                    prefs.edit().putString("filters", JSONArray(filters).toString()).apply()
+                    prefs.edit { putString("filters", JSONArray(filters).toString()) }
                     result.success(null)
                 }
             }

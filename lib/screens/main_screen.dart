@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:smsforward/models/bottom_item.dart';
 import 'package:smsforward/screens/channel/channel_screen.dart';
 import 'package:smsforward/screens/filter/filter_screen.dart';
+import 'package:smsforward/screens/history/history_screen.dart';
+import 'package:smsforward/screens/history/test_notification_screen.dart';
 
 import '../core/colors.dart';
 
@@ -22,8 +24,8 @@ class _MainScreenState extends State<MainScreen> {
       icon: CupertinoIcons.paperplane,
       label: '채널',
     ),
-    const BottomItem(page: Placeholder(), icon: Icons.history, label: '기록'),
-    const BottomItem(page: Placeholder(), icon: Icons.settings_outlined, label: '설정'),
+    const BottomItem(page: HistoryScreen(), icon: Icons.history, label: '기록'),
+    const BottomItem(page: TestNotificationScreen(), icon: Icons.settings_outlined, label: '설정'),
   ];
 
   int get currentIndex =>

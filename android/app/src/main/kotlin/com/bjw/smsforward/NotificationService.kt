@@ -5,6 +5,10 @@ import android.os.Bundle
 import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
 import android.util.Log
+import android.view.Display
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -48,6 +52,21 @@ class NotificationService : NotificationListenerService() {
                 "discord" -> postDiscord(extras)
                 "slack" -> postSlack(extras)
                 "sms" -> postSms(extras)
+            }
+
+            val db = AppDatabase.getInstance(applicationContext)
+            CoroutineScope(Dispatchers.IO).launch {
+                db.forwardLogDao().insert(
+                    ForwardLog(
+                        packageName = packageName,
+                        timestamp = System.currentTimeMillis(),
+                        title = title,
+                        filterName = filter.optString("name"),
+                        channelType = channel.optString("type"),
+                        success = true
+                    )
+                )
+                db.forwardLogDao().trimTo(300)
             }
         }
     }

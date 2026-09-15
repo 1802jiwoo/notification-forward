@@ -12,6 +12,10 @@ import io.flutter.plugin.common.MethodChannel
 import org.json.JSONArray
 import java.io.ByteArrayOutputStream
 import androidx.core.content.edit
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class MainActivity : FlutterActivity() {
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
@@ -68,7 +72,44 @@ class MainActivity : FlutterActivity() {
                     prefs.edit { putString("filters", JSONArray(filters).toString()) }
                     result.success(null)
                 }
+
+                "getForwardLogs" -> {
+                    val db = AppDatabase.getInstance(applicationContext)
+                    CoroutineScope(Dispatchers.IO).launch {
+                        val logs = db.forwardLogDao().getAll()
+                        val logMaps = logs.map { log ->
+                            mapOf(
+                                "id" to log.id,
+                                "packageName" to log.packageName,
+                                "timestamp" to log.timestamp,
+                                "title" to log.title,
+                                "filterName" to log.filterName,
+                                "channelType" to log.channelType,
+                                "success" to log.success
+                            )
+                        }
+                        withContext(Dispatchers.Main) {
+                            result.success(logMaps)
+                        }
+                    }
+                }
+
+                "getAppIcon" -> {
+                    val packageName = call.arguments as String
+                    result.success(getAppIconBytes(packageName))
+                }
             }
+        }
+    }
+
+    private fun getAppIconBytes(packageName: String): ByteArray? {
+        return try {
+            val icon = packageManager.getApplicationIcon(packageName)
+            val stream = ByteArrayOutputStream()
+            icon.toBitmap().compress(Bitmap.CompressFormat.PNG, 100, stream)
+            stream.toByteArray()
+        } catch (e: PackageManager.NameNotFoundException) {
+            null
         }
     }
 }

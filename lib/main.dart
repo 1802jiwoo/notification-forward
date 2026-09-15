@@ -6,6 +6,7 @@ import 'package:smsforward/core/colors.dart';
 import 'package:smsforward/hive/hive_registrar.g.dart';
 import 'package:smsforward/provider/channel_provider.dart';
 import 'package:smsforward/provider/filter_provider.dart';
+import 'package:smsforward/provider/forward_log_provider.dart';
 import 'package:smsforward/provider/installed_apps_provider.dart';
 import 'package:smsforward/screens/main_screen.dart';
 
@@ -28,6 +29,9 @@ void main() async {
         ),
         ChangeNotifierProvider(
           create: (context) => FilterProvider()..loadFilters(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => ForwardLogProvider()..loadForwardLogs(),
         ),
       ],
       child: MaterialApp(

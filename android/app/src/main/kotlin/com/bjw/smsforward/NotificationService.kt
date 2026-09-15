@@ -6,9 +6,12 @@ import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
 import android.util.Log
 import android.view.Display
+import io.flutter.embedding.engine.FlutterEngineCache
+import io.flutter.plugin.common.MethodChannel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -67,7 +70,16 @@ class NotificationService : NotificationListenerService() {
                     )
                 )
                 db.forwardLogDao().trimTo(300)
+                notifyFlutter()
             }
+        }
+    }
+
+    private suspend fun notifyFlutter() {
+        val engine = FlutterEngineCache.getInstance().get(MainActivity.ENGINE_ID) ?: return
+        withContext(Dispatchers.Main) {
+            MethodChannel(engine.dartExecutor.binaryMessenger, "com.bjw.smsforward")
+                .invokeMethod("onForwardLogInserted", null)
         }
     }
 

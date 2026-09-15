@@ -8,6 +8,7 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.core.graphics.drawable.toBitmap
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
+import io.flutter.embedding.engine.FlutterEngineCache
 import io.flutter.plugin.common.MethodChannel
 import org.json.JSONArray
 import java.io.ByteArrayOutputStream
@@ -20,6 +21,7 @@ import kotlinx.coroutines.withContext
 class MainActivity : FlutterActivity() {
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
+        FlutterEngineCache.getInstance().put(ENGINE_ID, flutterEngine)
         val prefs = context.getSharedPreferences("smsforward_data", MODE_PRIVATE)
 
         val methodChannel =
@@ -111,5 +113,9 @@ class MainActivity : FlutterActivity() {
         } catch (e: PackageManager.NameNotFoundException) {
             null
         }
+    }
+
+    companion object {
+        const val ENGINE_ID = "main_engine"
     }
 }

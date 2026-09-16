@@ -5,6 +5,8 @@ const primaryContainer = Color(0xFFE6F4ED);
 const warning = Color(0xFFEEB329);
 const warningContainer = Color(0xFFFBF1DE);
 const onWarningContainer = Color(0xFF795310);
+const error = Color(0xFFE3484D);
+const errorContainer = Color(0xFFFBEAEA);
 const background = Color(0xFFF4F6F4);
 
 const textPrimary = Color(0xFF181D19);

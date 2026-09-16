@@ -22,7 +22,9 @@ class HistoryScreen extends StatelessWidget {
     final today = DateTime.now();
     final Map<String, List<ForwardLog>> grouped = {};
     for (var forwardLog in forwardLogs) {
-      grouped.putIfAbsent(forwardLog.dateLabel(today), () => []).add(forwardLog);
+      grouped
+          .putIfAbsent(forwardLog.dateLabel(today), () => [])
+          .add(forwardLog);
     }
     return grouped.entries.toList();
   }
@@ -84,7 +86,7 @@ class _ForwardLogGroup extends StatelessWidget {
           physics: const NeverScrollableScrollPhysics(),
           padding: const EdgeInsets.only(bottom: 20),
           separatorBuilder: (context, index) =>
-              const Divider(color: line, height: 1),
+              const Divider(color: line, height: 10),
           itemCount: forwardLogs.length,
           itemBuilder: (context, index) => _ForwardLogItem(
             forwardLog: forwardLogs[index],
@@ -106,6 +108,8 @@ class _ForwardLogItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListTile(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+      minTileHeight: 70,
+      tileColor: forwardLog.success ? Colors.transparent : errorContainer,
       leading: Container(
         width: 40,
         height: 40,
@@ -121,6 +125,24 @@ class _ForwardLogItem extends StatelessWidget {
       subtitle: Text(
         '${forwardLog.filterName} · ${ChannelType.values.byName(forwardLog.channelType).title} · ${forwardLog.time}',
         style: textStyleW400(color: textTertiary, fontSize: 12),
+      ),
+      trailing: forwardLog.success
+          ? null
+          : TextButton(
+        style: TextButton.styleFrom(
+          backgroundColor: error,
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+          minimumSize: Size.zero,
+          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+        ),
+        onPressed: () {},
+        child: Text(
+          '재시도',
+          style: textStyleW900(color: Colors.white, fontSize: 12),
+        ),
       ),
     );
   }

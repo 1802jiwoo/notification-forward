@@ -33,9 +33,6 @@ class NotificationService : NotificationListenerService() {
         val title = extras.getString(Notification.EXTRA_TITLE)
         val text = extras.getString(Notification.EXTRA_TEXT)
 
-        Log.d("코툴린", title.toString())
-        Log.d("코툴린", text.toString())
-
         for (filter in filters) {
             val targetApps = filter.optJSONArray("targetApps")!!.toStringList()
             if (targetApps.isNotEmpty() && !targetApps.contains(packageName)) continue

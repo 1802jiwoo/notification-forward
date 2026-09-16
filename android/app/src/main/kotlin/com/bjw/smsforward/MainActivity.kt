@@ -95,23 +95,7 @@ class MainActivity : FlutterActivity() {
                         }
                     }
                 }
-
-                "getAppIcon" -> {
-                    val packageName = call.arguments as String
-                    result.success(getAppIconBytes(packageName))
-                }
             }
-        }
-    }
-
-    private fun getAppIconBytes(packageName: String): ByteArray? {
-        return try {
-            val icon = packageManager.getApplicationIcon(packageName)
-            val stream = ByteArrayOutputStream()
-            icon.toBitmap().compress(Bitmap.CompressFormat.PNG, 100, stream)
-            stream.toByteArray()
-        } catch (e: PackageManager.NameNotFoundException) {
-            null
         }
     }
 

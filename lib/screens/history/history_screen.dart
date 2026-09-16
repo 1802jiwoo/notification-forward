@@ -98,14 +98,30 @@ class _ForwardLogGroup extends StatelessWidget {
   }
 }
 
-class _ForwardLogItem extends StatelessWidget {
+class _ForwardLogItem extends StatefulWidget {
   const _ForwardLogItem({required this.forwardLog, required this.appIcon});
 
   final ForwardLog forwardLog;
   final Uint8List? appIcon;
 
   @override
+  State<_ForwardLogItem> createState() => _ForwardLogItemState();
+}
+
+class _ForwardLogItemState extends State<_ForwardLogItem> {
+  bool isRetrying = false;
+
+  Future<void> _retry() async {
+    setState(() => isRetrying = true);
+    await context.read<ForwardLogProvider>().retry(widget.forwardLog.id);
+    if (mounted) setState(() => isRetrying = false);
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final forwardLog = widget.forwardLog;
+    final appIcon = widget.appIcon;
+
     return ListTile(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
       minTileHeight: 70,
@@ -138,11 +154,20 @@ class _ForwardLogItem extends StatelessWidget {
             borderRadius: BorderRadius.circular(10),
           ),
         ),
-        onPressed: () {},
-        child: Text(
-          '재시도',
-          style: textStyleW900(color: Colors.white, fontSize: 12),
-        ),
+        onPressed: isRetrying ? null : _retry,
+        child: isRetrying
+            ? const SizedBox(
+                width: 12,
+                height: 12,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  color: Colors.white,
+                ),
+              )
+            : Text(
+                '재시도',
+                style: textStyleW900(color: Colors.white, fontSize: 12),
+              ),
       ),
     );
   }

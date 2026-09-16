@@ -75,6 +75,31 @@ class MainActivity : FlutterActivity() {
                     result.success(null)
                 }
 
+                "retryForward" -> {
+                    val id = (call.argument<Number>("id"))?.toLong()
+                    if (id == null) {
+                        result.success(false)
+                    } else {
+                        val db = AppDatabase.getInstance(applicationContext)
+                        CoroutineScope(Dispatchers.IO).launch {
+                            val log = db.forwardLogDao().getById(id)
+                            val channels =
+                                JSONArray(prefs.getString("channels", "[]")).toObjectList()
+                            val channel =
+                                channels.firstOrNull { it.optString("id") == log?.channelId }
+                            val success = if (log != null && channel != null) {
+                                ForwardSender.send(channel, log.title, log.body)
+                            } else {
+                                false
+                            }
+                            db.forwardLogDao().updateResult(id, success, System.currentTimeMillis())
+                            withContext(Dispatchers.Main) {
+                                result.success(success)
+                            }
+                        }
+                    }
+                }
+
                 "getForwardLogs" -> {
                     val db = AppDatabase.getInstance(applicationContext)
                     CoroutineScope(Dispatchers.IO).launch {

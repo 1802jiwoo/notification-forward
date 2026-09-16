@@ -9,7 +9,9 @@ data class ForwardLog(
     val packageName: String,
     val timestamp: Long,
     val title: String?,
+    val body: String?,
     val filterName: String,
+    val channelId: String,
     val channelType: String,
     val success: Boolean
 )

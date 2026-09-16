@@ -25,6 +25,12 @@ class ForwardLogProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<bool> retry(int id) async {
+    final success = await forwardLogRepository.retryForwardLog(id);
+    await loadForwardLogs();
+    return success;
+  }
+
   @override
   void dispose() {
     AppChannel.instance.setMethodCallHandler(null);

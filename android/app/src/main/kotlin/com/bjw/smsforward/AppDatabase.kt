@@ -5,7 +5,7 @@ import androidx.room3.Database
 import androidx.room3.Room
 import androidx.room3.RoomDatabase
 
-@Database(entities = [ForwardLog::class], version = 1)
+@Database(entities = [ForwardLog::class], version = 2)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun forwardLogDao(): ForwardLogDao
 
@@ -16,7 +16,7 @@ abstract class AppDatabase : RoomDatabase() {
                 // 위에서 순서가 밀린 경우 앞에 저장된 값 반환
                 INSTANCE ?: Room.databaseBuilder(
                     context.applicationContext, AppDatabase::class.java, "smsforward.db"
-                ).build().also { INSTANCE = it }
+                ).fallbackToDestructiveMigration(true).build().also { INSTANCE = it }
             }
     }
 }

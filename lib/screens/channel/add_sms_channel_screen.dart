@@ -12,7 +12,9 @@ import '../../widgets/custom_long_text_button.dart';
 import '../../widgets/form_field_row.dart';
 
 class AddSmsChannelScreen extends StatefulWidget {
-  const AddSmsChannelScreen({super.key});
+  const AddSmsChannelScreen({super.key, this.editingChannel});
+
+  final SmsChannel? editingChannel;
 
   @override
   State<AddSmsChannelScreen> createState() => _AddSmsChannelScreenState();
@@ -23,9 +25,16 @@ class _AddSmsChannelScreenState extends State<AddSmsChannelScreen> {
   final TextEditingController recipientPhoneNumberController = TextEditingController();
   bool isSmsPermissionGranted = false;
 
+  bool get isEditing => widget.editingChannel != null;
+
   @override
   void initState() {
     super.initState();
+    final editingChannel = widget.editingChannel;
+    if (editingChannel != null) {
+      nameController.text = editingChannel.name;
+      recipientPhoneNumberController.text = editingChannel.recipientPhoneNumber;
+    }
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
       isSmsPermissionGranted = await Permission.sms.status.isGranted;
       setState(() {});
@@ -48,7 +57,7 @@ class _AddSmsChannelScreenState extends State<AddSmsChannelScreen> {
     }
 
     final channel = SmsChannel(
-      id: DateTime.now().millisecondsSinceEpoch.toString(),
+      id: widget.editingChannel?.id ?? DateTime.now().millisecondsSinceEpoch.toString(),
       type: ChannelType.sms,
       name: name,
       isActive: true,
@@ -75,7 +84,10 @@ class _AddSmsChannelScreenState extends State<AddSmsChannelScreen> {
     return Scaffold(
       appBar: AppBar(
         titleSpacing: -5,
-        title: Text('SMS 채널', style: textStyleW600(fontSize: 18)),
+        title: Text(
+          isEditing ? 'SMS 채널 수정' : 'SMS 채널',
+          style: textStyleW600(fontSize: 18),
+        ),
         leading: const BackIconButton(),
       ),
       body: SafeArea(

@@ -11,7 +11,9 @@ import '../../widgets/custom_long_text_button.dart';
 import '../../widgets/form_field_row.dart';
 
 class AddDiscordChannelScreen extends StatefulWidget {
-  const AddDiscordChannelScreen({super.key});
+  const AddDiscordChannelScreen({super.key, this.editingChannel});
+
+  final DiscordChannel? editingChannel;
 
   @override
   State<AddDiscordChannelScreen> createState() => _AddDiscordChannelScreenState();
@@ -20,6 +22,18 @@ class AddDiscordChannelScreen extends StatefulWidget {
 class _AddDiscordChannelScreenState extends State<AddDiscordChannelScreen> {
   final TextEditingController nameController = TextEditingController();
   final TextEditingController webhookURLController = TextEditingController();
+
+  bool get isEditing => widget.editingChannel != null;
+
+  @override
+  void initState() {
+    super.initState();
+    final editingChannel = widget.editingChannel;
+    if (editingChannel != null) {
+      nameController.text = editingChannel.name;
+      webhookURLController.text = editingChannel.webhookUrl;
+    }
+  }
 
   @override
   void dispose() {
@@ -37,7 +51,7 @@ class _AddDiscordChannelScreenState extends State<AddDiscordChannelScreen> {
     }
 
     final channel = DiscordChannel(
-      id: DateTime.now().millisecondsSinceEpoch.toString(),
+      id: widget.editingChannel?.id ?? DateTime.now().millisecondsSinceEpoch.toString(),
       type: ChannelType.discord,
       name: name,
       isActive: true,
@@ -56,7 +70,10 @@ class _AddDiscordChannelScreenState extends State<AddDiscordChannelScreen> {
     return Scaffold(
       appBar: AppBar(
         titleSpacing: -5,
-        title: Text('디스코드 채널', style: textStyleW600(fontSize: 18)),
+        title: Text(
+          isEditing ? '디스코드 채널 수정' : '디스코드 채널',
+          style: textStyleW600(fontSize: 18),
+        ),
         leading: const BackIconButton(),
       ),
       body: SafeArea(

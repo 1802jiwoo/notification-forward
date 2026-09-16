@@ -13,7 +13,9 @@ import '../../provider/channel_provider.dart';
 import '../../widgets/custom_long_text_button.dart';
 
 class AddEmailChannelScreen extends StatefulWidget {
-  const AddEmailChannelScreen({super.key});
+  const AddEmailChannelScreen({super.key, this.editingChannel});
+
+  final EmailChannel? editingChannel;
 
   @override
   State<AddEmailChannelScreen> createState() => _AddEmailChannelScreenState();
@@ -27,6 +29,22 @@ class _AddEmailChannelScreenState extends State<AddEmailChannelScreen> {
   final TextEditingController appPasswordController = TextEditingController();
   final List<String> recipientEmails = [];
   bool isPasswordVisible = false;
+
+  bool get isEditing => widget.editingChannel != null;
+
+  @override
+  void initState() {
+    super.initState();
+    final editingChannel = widget.editingChannel;
+    if (editingChannel != null) {
+      nameController.text = editingChannel.name;
+      senderEmailController.text = editingChannel.senderEmail;
+      smtpHostController.text = editingChannel.smtpHost;
+      smtpPortController.text = editingChannel.smtpPort;
+      appPasswordController.text = editingChannel.appPassword;
+      recipientEmails.addAll(editingChannel.recipientEmails);
+    }
+  }
 
   @override
   void dispose() {
@@ -55,7 +73,7 @@ class _AddEmailChannelScreenState extends State<AddEmailChannelScreen> {
     }
 
     final channel = EmailChannel(
-      id: DateTime.now().millisecondsSinceEpoch.toString(),
+      id: widget.editingChannel?.id ?? DateTime.now().millisecondsSinceEpoch.toString(),
       type: ChannelType.email,
       name: name,
       isActive: true,
@@ -118,7 +136,10 @@ class _AddEmailChannelScreenState extends State<AddEmailChannelScreen> {
     return Scaffold(
       appBar: AppBar(
         titleSpacing: -5,
-        title: Text('이메일 채널', style: textStyleW600(fontSize: 18)),
+        title: Text(
+          isEditing ? '이메일 채널 수정' : '이메일 채널',
+          style: textStyleW600(fontSize: 18),
+        ),
         leading: const BackIconButton(),
       ),
       body: SafeArea(

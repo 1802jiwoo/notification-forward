@@ -11,7 +11,9 @@ import '../../widgets/custom_long_text_button.dart';
 import '../../widgets/form_field_row.dart';
 
 class AddSlackChannelScreen extends StatefulWidget {
-  const AddSlackChannelScreen({super.key});
+  const AddSlackChannelScreen({super.key, this.editingChannel});
+
+  final SlackChannel? editingChannel;
 
   @override
   State<AddSlackChannelScreen> createState() => _AddSlackChannelScreenState();
@@ -21,6 +23,18 @@ class _AddSlackChannelScreenState extends State<AddSlackChannelScreen> {
   final TextEditingController nameController = TextEditingController();
   final TextEditingController webhookURLController = TextEditingController();
   final TextEditingController channelController = TextEditingController();
+
+  bool get isEditing => widget.editingChannel != null;
+
+  @override
+  void initState() {
+    super.initState();
+    final editingChannel = widget.editingChannel;
+    if (editingChannel != null) {
+      nameController.text = editingChannel.name;
+      webhookURLController.text = editingChannel.webhookUrl;
+    }
+  }
 
   @override
   void dispose() {
@@ -39,7 +53,7 @@ class _AddSlackChannelScreenState extends State<AddSlackChannelScreen> {
     }
 
     final channel = SlackChannel(
-      id: DateTime.now().millisecondsSinceEpoch.toString(),
+      id: widget.editingChannel?.id ?? DateTime.now().millisecondsSinceEpoch.toString(),
       type: ChannelType.slack,
       name: name,
       isActive: true,
@@ -58,7 +72,10 @@ class _AddSlackChannelScreenState extends State<AddSlackChannelScreen> {
     return Scaffold(
       appBar: AppBar(
         titleSpacing: -5,
-        title: Text('슬랙 채널', style: textStyleW600(fontSize: 18)),
+        title: Text(
+          isEditing ? '슬랙 채널 수정' : '슬랙 채널',
+          style: textStyleW600(fontSize: 18),
+        ),
         leading: const BackIconButton(),
       ),
       body: SafeArea(

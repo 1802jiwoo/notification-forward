@@ -44,35 +44,69 @@ class HistoryScreen extends StatelessWidget {
         title: Text('기록', style: textStyleW700()),
       ),
       body: SafeArea(
-        child: Column(
-          children: [
-            Container(
-              margin: const EdgeInsets.symmetric(horizontal: 20),
-              padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-              width: double.infinity,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                color: background,
-              ),
-              child: Text(
-                '최근 300개까지 보관하고, 넘으면 오래된 기록부터 지워져요.',
-                style: textStyleW400(color: textTertiary, fontSize: 12),
-              ),
-            ),
-            const SizedBox(height: 20,),
-            Expanded(
-              child: ListView.builder(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                itemCount: groups.length,
-                itemBuilder: (context, index) => _ForwardLogGroup(
-                  label: groups[index].key,
-                  forwardLogs: groups[index].value,
-                  appsByPackageName: appsByPackageName,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: forwardLogs.isEmpty
+              ? const _EmptyHistory()
+              : Column(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 15,
+                        vertical: 10,
+                      ),
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        color: background,
+                      ),
+                      child: Text(
+                        '최근 300개까지 보관하고, 넘으면 오래된 기록부터 지워져요.',
+                        style: textStyleW400(color: textTertiary, fontSize: 12),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    Expanded(
+                      child: ListView.builder(
+                        itemCount: groups.length,
+                        itemBuilder: (context, index) => _ForwardLogGroup(
+                          label: groups[index].key,
+                          forwardLogs: groups[index].value,
+                          appsByPackageName: appsByPackageName,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-              ),
-            ),
-          ],
         ),
+      ),
+    );
+  }
+}
+
+class _EmptyHistory extends StatelessWidget {
+  const _EmptyHistory();
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: double.infinity,
+      child: Column(
+        spacing: 15,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const CircleAvatar(
+            radius: 40,
+            backgroundColor: background,
+            child: Icon(Icons.history, color: primary, size: 40),
+          ),
+          Text('아직 전달된 알림이 없어요', style: textStyleW700(fontSize: 20)),
+          Text(
+            '규칙에 맞는 알림이 오면 여기에 하나씩 쌓입니다.\n최근 300개까지 보관해요',
+            style: textStyleW400(color: textTertiary),
+            textAlign: TextAlign.center,
+          ),
+        ],
       ),
     );
   }

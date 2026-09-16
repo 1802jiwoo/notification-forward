@@ -46,9 +46,10 @@ class _ChannelScreenState extends State<ChannelScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 20),
         child: channel.isEmpty
             ? _EmptyChannel(addChannel: addChannel)
-            : ListView.builder(
+            : ListView.separated(
                 padding: const EdgeInsets.symmetric(vertical: 10),
                 itemCount: channel.length,
+                separatorBuilder: (context, index) => const SizedBox(height: 10,),
                 itemBuilder: (context, index) =>
                     ChannelItem(channel: channel[index], onTap: () {}),
               ),

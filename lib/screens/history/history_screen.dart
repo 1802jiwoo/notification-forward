@@ -44,14 +44,34 @@ class HistoryScreen extends StatelessWidget {
         title: Text('기록', style: textStyleW700()),
       ),
       body: SafeArea(
-        child: ListView.builder(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          itemCount: groups.length,
-          itemBuilder: (context, index) => _ForwardLogGroup(
-            label: groups[index].key,
-            forwardLogs: groups[index].value,
-            appsByPackageName: appsByPackageName,
-          ),
+        child: Column(
+          children: [
+            Container(
+              margin: const EdgeInsets.symmetric(horizontal: 20),
+              padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+              width: double.infinity,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                color: background,
+              ),
+              child: Text(
+                '최근 300개까지 보관하고, 넘으면 오래된 기록부터 지워져요.',
+                style: textStyleW400(color: textTertiary, fontSize: 12),
+              ),
+            ),
+            const SizedBox(height: 20,),
+            Expanded(
+              child: ListView.builder(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                itemCount: groups.length,
+                itemBuilder: (context, index) => _ForwardLogGroup(
+                  label: groups[index].key,
+                  forwardLogs: groups[index].value,
+                  appsByPackageName: appsByPackageName,
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );

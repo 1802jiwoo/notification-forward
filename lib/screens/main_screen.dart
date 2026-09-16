@@ -16,7 +16,7 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
-  final PageController _pageController = PageController();
+  int _currentIndex = 0;
   final List<BottomItem> _bottomItems = [
     const BottomItem(page: FilterScreen(), icon: Icons.tune, label: '필터'),
     const BottomItem(
@@ -28,39 +28,21 @@ class _MainScreenState extends State<MainScreen> {
     const BottomItem(page: TestNotificationScreen(), icon: Icons.settings_outlined, label: '설정'),
   ];
 
-  int get currentIndex =>
-      _pageController.hasClients ? _pageController.page!.round() : 0;
-
-  @override
-  void dispose() {
-    _pageController.dispose();
-    super.dispose();
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: PageView(
-          controller: _pageController,
-          physics: const NeverScrollableScrollPhysics(),
-          onPageChanged: (value) => setState(() {}),
-          children: List.generate(
-            _bottomItems.length,
-            (index) => _bottomItems[index].page,
-          ),
+        child: IndexedStack(
+          index: _currentIndex,
+          children: [
+            for (var bottomItem in _bottomItems) bottomItem.page,
+          ],
         ),
       ),
       bottomNavigationBar: BottomNavBar(
-        currentIndex: currentIndex,
+        currentIndex: _currentIndex,
         bottomItems: _bottomItems,
-        onTap: (value) async {
-          await _pageController.animateToPage(
-            value,
-            duration: const Duration(milliseconds: 200),
-            curve: Curves.easeOut,
-          );
-        },
+        onTap: (value) => setState(() => _currentIndex = value),
       ),
     );
   }

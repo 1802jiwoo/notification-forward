@@ -64,4 +64,5 @@ dependencies {
     ksp("androidx.room3:room3-compiler:3.0.3")
     implementation("com.sun.mail:android-mail:1.6.7")
     implementation("com.sun.mail:android-activation:1.6.7")
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
 }

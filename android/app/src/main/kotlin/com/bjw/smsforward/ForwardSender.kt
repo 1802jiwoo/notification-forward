@@ -3,6 +3,11 @@ package com.bjw.smsforward
 import android.util.Log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.Request
+import okhttp3.RequestBody.Companion.toRequestBody
+import okio.IOException
+import org.json.JSONArray
 import org.json.JSONObject
 import java.util.Properties
 import javax.mail.Authenticator
@@ -46,8 +51,8 @@ object ForwardSender {
                 val message = MimeMessage(session).apply {
                     setFrom(InternetAddress(emailAddress))
                     setRecipients(Message.RecipientType.TO, InternetAddress.parse(to))
-                    setSubject(title)
-                    setText(text)
+                    setSubject(title ?: "(제목 없음)")
+                    setText(text ?: "(내용 없음)")
                 }
                 Transport.send(message)
                 true
@@ -57,9 +62,32 @@ object ForwardSender {
             }
         }
 
-    private fun sendDiscord(title: String?, text: String?, channel: JSONObject): Boolean {
-        return false
-    }
+    private suspend fun sendDiscord(title: String?, text: String?, channel: JSONObject): Boolean =
+        withContext(Dispatchers.IO) {
+            val webhookUrl = channel.optString("webhookUrl")
+
+            val embed = JSONObject().apply {
+                put("title", title ?: "(제목 없음)")
+                put("description", text ?: "(내용 없음)")
+            }
+            val json = JSONObject().apply {
+                put("embeds", JSONArray().put(embed))
+            }
+
+            val requestBody = json.toString().toRequestBody("application/json".toMediaType())
+            val request = Request.Builder()
+                .url(webhookUrl)
+                .post(requestBody)
+                .build()
+
+            try {
+                HttpClientProvider.client.newCall(request).execute().use { response ->
+                    response.isSuccessful
+                }
+            } catch (e: IOException) {
+                false
+            }
+        }
 
     private fun sendSlack(title: String?, text: String?, channel: JSONObject): Boolean {
         return false

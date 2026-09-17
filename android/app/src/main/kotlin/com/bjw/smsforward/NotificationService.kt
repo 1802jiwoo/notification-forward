@@ -73,7 +73,7 @@ class NotificationService : NotificationListenerService() {
             val channelId = filter.optString("channelId")
             val channel = channels.firstOrNull { it.optString("id") == channelId } ?: continue
             serviceScope.launch {
-                val result = ForwardSender.send(channel, title, text)
+                val result = ForwardSender.send(channel, title, text, applicationContext)
 
                 val db = AppDatabase.getInstance(applicationContext)
                 db.forwardLogDao().insert(

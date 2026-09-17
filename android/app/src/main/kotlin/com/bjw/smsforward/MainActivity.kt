@@ -89,7 +89,7 @@ class MainActivity : FlutterActivity() {
                             val channel =
                                 channels.firstOrNull { it.optString("id") == log?.channelId }
                             val success = if (log != null && channel != null) {
-                                ForwardSender.send(channel, log.title, log.body)
+                                ForwardSender.send(channel, log.title, log.body, context)
                             } else {
                                 false
                             }
@@ -110,7 +110,7 @@ class MainActivity : FlutterActivity() {
                     } else {
                         val channel = JSONObject(channelMap)
                         CoroutineScope(Dispatchers.IO).launch {
-                            val success = ForwardSender.send(channel, title, text)
+                            val success = ForwardSender.send(channel, title, text, context)
                             withContext(Dispatchers.Main) {
                                 result.success(success)
                             }

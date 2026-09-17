@@ -1,6 +1,12 @@
 package com.bjw.smsforward
 
+import android.Manifest
+import android.content.Context
+import android.content.pm.PackageManager
+import android.telephony.SmsManager
 import android.util.Log
+import android.widget.Toast
+import androidx.core.content.ContextCompat
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaType
@@ -19,12 +25,12 @@ import javax.mail.internet.InternetAddress
 import javax.mail.internet.MimeMessage
 
 object ForwardSender {
-    suspend fun send(channel: JSONObject, title: String?, text: String?): Boolean =
+    suspend fun send(channel: JSONObject, title: String?, text: String?, context: Context): Boolean =
         when (channel.optString("type")) {
             "email" -> sendEmail(title, text, channel)
             "discord" -> sendDiscord(title, text, channel)
             "slack" -> sendSlack(title, text, channel)
-            "sms" -> sendSms(title, text, channel)
+            "sms" -> sendSms(title, text, channel, context)
             else -> false
         }
 
@@ -112,7 +118,35 @@ object ForwardSender {
             }
         }
 
-    private fun sendSms(title: String?, text: String?, channel: JSONObject): Boolean {
-        return false
+    private fun sendSms(
+        title: String?,
+        text: String?,
+        channel: JSONObject,
+        context: Context
+    ): Boolean {
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.SEND_SMS) == PackageManager.PERMISSION_GRANTED) {
+            Toast.makeText(context, "메시지 전송 권한이 없습니다.", Toast.LENGTH_SHORT).show()
+            return false
+        }
+
+        try {
+            val smsManager = context.getSystemService(SmsManager::class.java)
+                ?: SmsManager.getDefault()
+
+            if ((title?.length ?: 7) + (text?.length ?: 7) > 160) {
+                val parts = smsManager.divideMessage("${title}\n${text}")
+                smsManager.sendMultipartTextMessage(
+                    channel.optString("phoneNumber"),
+                    null,
+                    parts,
+                    null,
+                    null
+                )
+            }
+
+            return true
+        } catch (e: IOException) {
+            return false
+        }
     }
 }

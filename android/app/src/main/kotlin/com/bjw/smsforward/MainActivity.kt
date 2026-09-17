@@ -11,6 +11,7 @@ import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.embedding.engine.FlutterEngineCache
 import io.flutter.plugin.common.MethodChannel
 import org.json.JSONArray
+import org.json.JSONObject
 import java.io.ByteArrayOutputStream
 import androidx.core.content.edit
 import kotlinx.coroutines.CoroutineScope
@@ -93,6 +94,23 @@ class MainActivity : FlutterActivity() {
                                 false
                             }
                             db.forwardLogDao().updateResult(id, success, System.currentTimeMillis())
+                            withContext(Dispatchers.Main) {
+                                result.success(success)
+                            }
+                        }
+                    }
+                }
+
+                "testSend" -> {
+                    val channelMap = call.argument<Map<String, Any?>>("channel")
+                    val title = call.argument<String>("title")
+                    val text = call.argument<String>("text")
+                    if (channelMap == null) {
+                        result.success(false)
+                    } else {
+                        val channel = JSONObject(channelMap)
+                        CoroutineScope(Dispatchers.IO).launch {
+                            val success = ForwardSender.send(channel, title, text)
                             withContext(Dispatchers.Main) {
                                 result.success(success)
                             }

@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 import 'package:smsforward/widgets/channel/add_recipient_email_sheet.dart';
 import 'package:smsforward/widgets/tag_chip_list_field.dart';
 import 'package:smsforward/widgets/back_icon_button.dart';
 import 'package:smsforward/widgets/form_field_row.dart';
 
+import '../../core/app_channel.dart';
 import '../../core/colors.dart';
 import '../../core/text_styles.dart';
 import '../../models/channel/channel_type.dart';
@@ -89,7 +91,48 @@ class _AddEmailChannelScreenState extends State<AddEmailChannelScreen> {
     Navigator.pop(context);
   }
 
-  Future<void> sendTest() async {}
+  bool isSendingTest = false;
+
+  Future<void> sendTest() async {
+    if (isSendingTest) return;
+
+    final senderEmail = senderEmailController.text.trim();
+    final smtpHost = smtpHostController.text.trim();
+    final smtpPort = smtpPortController.text.trim();
+    final appPassword = appPasswordController.text.trim();
+    if (senderEmail.isEmpty ||
+        smtpHost.isEmpty ||
+        smtpPort.isEmpty ||
+        appPassword.isEmpty ||
+        recipientEmails.isEmpty) {
+      // TODO 필수 항목 미입력 경고
+      return;
+    }
+
+    setState(() => isSendingTest = true);
+
+    final channel = EmailChannel(
+      id: widget.editingChannel?.id ?? 'test',
+      type: ChannelType.email,
+      name: nameController.text.trim(),
+      isActive: true,
+      senderEmail: senderEmail,
+      smtpHost: smtpHost,
+      smtpPort: smtpPort,
+      appPassword: appPassword,
+      recipientEmails: recipientEmails,
+    );
+
+    final success = await AppChannel.instance.invokeMethod<bool>('testSend', {
+      'channel': channel.toMap(),
+      'title': '테스트 알림',
+      'text': '알림 전달앱에서 보내는 테스트 메시지 입니다.',
+    });
+
+    if (!mounted) return;
+    setState(() => isSendingTest = false);
+    Fluttertoast.showToast(msg: success == true ? '테스트 전송 성공' : '테스트 전송 실패');
+  }
 
   void togglePasswordVisible() {
     setState(() {
@@ -155,7 +198,7 @@ class _AddEmailChannelScreenState extends State<AddEmailChannelScreen> {
                   children: [
                     Expanded(
                       child: CustomLongTextButton(
-                        title: '테스트 전송',
+                        title: isSendingTest ? '전송 중...' : '테스트 전송',
                         callback: sendTest,
                         isFill: false,
                       ),

@@ -3,6 +3,7 @@ package com.bjw.smsforward
 import android.app.Notification
 import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
+import android.util.Log
 import io.flutter.embedding.engine.FlutterEngineCache
 import io.flutter.plugin.common.MethodChannel
 import kotlinx.coroutines.CoroutineScope
@@ -18,20 +19,39 @@ fun JSONArray.toStringList(): List<String> = (0 until length()).map { getString(
 
 class NotificationService : NotificationListenerService() {
     private val serviceScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+    private val recentNotifications = mutableMapOf<String, RecentNotification>()
 
     override fun onNotificationPosted(sbn: StatusBarNotification?) {
         super.onNotificationPosted(sbn)
+        if (sbn == null) return
+
+        val notification = sbn.notification
+        val extras = notification.extras
+        val title = extras.getString(Notification.EXTRA_TITLE)
+        val text = extras.getString(Notification.EXTRA_TEXT)
+        val subText = extras.getString(Notification.EXTRA_SUB_TEXT)
+        val isGroupSummary = notification.flags and Notification.FLAG_GROUP_SUMMARY != 0
+
+        Log.d(
+            "코틀린 알림 로그",
+            "패키지=${sbn.packageName} key=${sbn.key} id=${sbn.id} tag=${sbn.tag} " +
+                "postTime=${sbn.postTime} when=${notification.`when`} " +
+                "groupKey=${sbn.groupKey} isGroupSummary=$isGroupSummary " +
+                "제목=$title 내용=$text 서브텍스트=$subText"
+        )
+
+        if (isGroupSummary) return
+
         val prefs = getSharedPreferences("smsforward_data", MODE_PRIVATE)
         val filters = JSONArray(prefs.getString("filters", "[]")).toObjectList()
         val channels = JSONArray(prefs.getString("channels", "[]")).toObjectList()
 
         if (filters.isEmpty()) return
-        if (sbn == null) return
+
+        if (title.isNullOrBlank() && text.isNullOrBlank()) return
+        if (isDuplicateWithinWindow(sbn.key, title, text)) return
 
         val packageName = sbn.packageName
-        val extras = sbn.notification.extras
-        val title = extras.getString(Notification.EXTRA_TITLE)
-        val text = extras.getString(Notification.EXTRA_TEXT)
 
         for (filter in filters) {
             val targetApps = filter.optJSONArray("targetApps")!!.toStringList()
@@ -73,6 +93,23 @@ class NotificationService : NotificationListenerService() {
             }
 
         }
+    }
+
+    private fun isDuplicateWithinWindow(key: String, title: String?, text: String?): Boolean {
+        val now = System.currentTimeMillis()
+        recentNotifications.entries.removeAll { now - it.value.timestamp > DUPLICATE_WINDOW_MS }
+
+        val previous = recentNotifications[key]
+        val isDuplicate = previous != null && previous.title == title && previous.text == text
+
+        recentNotifications[key] = RecentNotification(title, text, now)
+        return isDuplicate
+    }
+
+    private data class RecentNotification(val title: String?, val text: String?, val timestamp: Long)
+
+    companion object {
+        private const val DUPLICATE_WINDOW_MS = 200L
     }
 
     private suspend fun notifyFlutter() {

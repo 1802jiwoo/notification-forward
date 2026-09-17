@@ -48,7 +48,7 @@ class HistoryScreen extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 20),
           child: forwardLogs.isEmpty
               ? const _EmptyHistory()
-              : Column(
+              : ListView(
                   children: [
                     Container(
                       padding: const EdgeInsets.symmetric(
@@ -66,14 +66,14 @@ class HistoryScreen extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 20),
-                    Expanded(
-                      child: ListView.builder(
-                        itemCount: groups.length,
-                        itemBuilder: (context, index) => _ForwardLogGroup(
-                          label: groups[index].key,
-                          forwardLogs: groups[index].value,
-                          appsByPackageName: appsByPackageName,
-                        ),
+                    ListView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: groups.length,
+                      itemBuilder: (context, index) => _ForwardLogGroup(
+                        label: groups[index].key,
+                        forwardLogs: groups[index].value,
+                        appsByPackageName: appsByPackageName,
                       ),
                     ),
                   ],
@@ -188,7 +188,7 @@ class _ForwardLogItemState extends State<_ForwardLogItem> {
           color: appIcon == null ? background : null,
           image: appIcon == null
               ? null
-              : DecorationImage(image: MemoryImage(appIcon!)),
+              : DecorationImage(image: MemoryImage(appIcon)),
         ),
       ),
       title: Text(forwardLog.title ?? '', style: textStyleW600(fontSize: 16)),

@@ -89,9 +89,28 @@ object ForwardSender {
             }
         }
 
-    private fun sendSlack(title: String?, text: String?, channel: JSONObject): Boolean {
-        return false
-    }
+    private suspend fun sendSlack(title: String?, text: String?, channel: JSONObject): Boolean =
+        withContext(Dispatchers.IO) {
+            val webhookUrl = channel.optString("webhookUrl")
+
+            val json = JSONObject().apply {
+                put("text", "*${title ?: "(제목 없음)"}*\n${text ?: "(내용 없음)"}")
+            }
+
+            val requestBody = json.toString().toRequestBody("application/json".toMediaType())
+            val request = Request.Builder()
+                .url(webhookUrl)
+                .post(requestBody)
+                .build()
+
+            try {
+                HttpClientProvider.client.newCall(request).execute().use { response ->
+                    response.isSuccessful
+                }
+            } catch (e: IOException) {
+                false
+            }
+        }
 
     private fun sendSms(title: String?, text: String?, channel: JSONObject): Boolean {
         return false

@@ -5,6 +5,7 @@ import 'package:smsforward/core/text_styles.dart';
 import 'package:smsforward/models/filter/filter.dart';
 import 'package:smsforward/provider/filter_provider.dart';
 import 'package:smsforward/screens/filter/add_filter_screen.dart';
+import 'package:smsforward/screens/filter/detail_filter_screen.dart';
 import 'package:smsforward/widgets/add_icon_button.dart';
 import 'package:smsforward/widgets/custom_switch.dart';
 
@@ -97,43 +98,51 @@ class _FilterItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(15),
-      width: double.infinity,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(15),
-        border: Border.all(color: line),
+    return GestureDetector(
+      onTap: () => Navigator.push(
+        context,
+        CupertinoPageRoute(builder: (context) => DetailFilterScreen(
+          filter: filter,
+        )),
       ),
-      child: Row(
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(filter.name, style: textStyleW600(fontSize: 16)),
-                RichText(
-                  text: TextSpan(
-                    style: textStyleW400(color: textTertiary),
-                    children: [
-                      const TextSpan(text: '키워드 "'),
-                      for (var keyword in filter.keywords)
-                        TextSpan(
-                          text:
-                              keyword +
-                              (filter.keywords.last == keyword ? '' : ', '),
-                        ),
-                      const TextSpan(text: '"'),
-                    ],
+      child: Container(
+        padding: const EdgeInsets.all(15),
+        width: double.infinity,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(15),
+          border: Border.all(color: line),
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(filter.name, style: textStyleW600(fontSize: 16)),
+                  RichText(
+                    text: TextSpan(
+                      style: textStyleW400(color: textTertiary),
+                      children: [
+                        const TextSpan(text: '키워드 "'),
+                        for (var keyword in filter.keywords)
+                          TextSpan(
+                            text:
+                                keyword +
+                                (filter.keywords.last == keyword ? '' : ', '),
+                          ),
+                        const TextSpan(text: '"'),
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-          CustomSwitch(
-            isActive: filter.isActive,
-            onChanged: (value) => onActive(),
-          ),
-        ],
+            CustomSwitch(
+              isActive: filter.isActive,
+              onChanged: (value) => onActive(),
+            ),
+          ],
+        ),
       ),
     );
   }

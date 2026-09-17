@@ -38,7 +38,7 @@ class NotificationService : NotificationListenerService() {
             if (targetApps.isNotEmpty() && !targetApps.contains(packageName)) continue
 
             val keywords = filter.optJSONArray("keywords")!!.toStringList()
-            val isMatched = keywords.any { keyword ->
+            val isMatched = keywords.isEmpty() || keywords.any { keyword ->
                 when (filter.optString("keywordTarget")) {
                     "titleOnly" -> title != null && title.contains(keyword)
                     "bodyOnly" -> text != null && text.contains(keyword)

@@ -127,24 +127,30 @@ class _AddKeywordSheetState extends State<AddKeywordSheet> {
               children: [
                 Text('이렇게 걸러져요', style: textStyleW600(color: textTertiary)),
                 const SizedBox(height: 5),
-                RichText(
-                  text: TextSpan(
+                if (widget.keywords.isEmpty)
+                  Text(
+                    '키워드가 없으면 대상 앱의 모든 알림을 전달합니다.',
                     style: textStyleW400(color: textSecondary),
-                    children: [
-                      const TextSpan(text: '키워드 중 '),
-                      TextSpan(
-                        text: '하나라도',
-                        style: textStyleW700(color: textSecondary),
-                      ),
-                      const TextSpan(text: ' 들어 있으면 전달합니다.\n예: "[Web발신] 카드 '),
-                      TextSpan(
-                        text: '승인',
-                        style: textStyleW700(color: primary),
-                      ),
-                      const TextSpan(text: ' 5,600원" → 전달'),
-                    ],
+                  )
+                else
+                  RichText(
+                    text: TextSpan(
+                      style: textStyleW400(color: textSecondary),
+                      children: [
+                        const TextSpan(text: '키워드 중 '),
+                        TextSpan(
+                          text: '하나라도',
+                          style: textStyleW700(color: textSecondary),
+                        ),
+                        const TextSpan(text: ' 들어 있으면 전달합니다.\n예: "[Web발신] 카드 '),
+                        TextSpan(
+                          text: '승인',
+                          style: textStyleW700(color: primary),
+                        ),
+                        const TextSpan(text: ' 5,600원" → 전달'),
+                      ],
+                    ),
                   ),
-                ),
               ],
             ),
           ),

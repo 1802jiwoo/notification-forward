@@ -147,16 +147,18 @@ class AppItem extends StatelessWidget {
                   : DecorationImage(image: MemoryImage(app!.icon)),
             ),
           ),
-          Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(app?.appName ?? '모든 앱', style: textStyleW600(fontSize: 16)),
-              Text(
-                app?.packageName ?? '기기에 오는 모든 알림',
-                style: textStyleW400(color: textTertiary, fontSize: 12),
-              ),
-            ],
+          Expanded(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(app?.appName ?? '모든 앱', style: textStyleW600(fontSize: 16)),
+                Text(
+                  app?.packageName ?? '기기에 오는 모든 알림',
+                  style: textStyleW400(color: textTertiary, fontSize: 12),
+                ),
+              ],
+            ),
           ),
         ],
       ),

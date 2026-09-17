@@ -412,14 +412,9 @@ class _ChannelItem extends StatelessWidget {
             ),
             onChanged: (value) => selectChannel(channel.id),
           ),
-          Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
-            child: ColorFiltered(
-              colorFilter: const ColorFilter.mode(textSecondary, BlendMode.srcIn),
-              child: SizedBox(width: 24, child: channel.type.icon),
-            ),
+          ColorFiltered(
+            colorFilter: const ColorFilter.mode(textSecondary, BlendMode.srcIn),
+            child: SizedBox(width: 24, child: channel.type.icon),
           ),
           Text(channel.name, style: textStyleW600(fontSize: 16)),
         ],

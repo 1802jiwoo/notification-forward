@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:smsforward/models/installed_app.dart';
 import 'package:smsforward/provider/installed_apps_provider.dart';
+import 'package:smsforward/widgets/app_icon.dart';
 import 'package:smsforward/widgets/back_icon_button.dart';
 
 import '../../core/colors.dart';
@@ -136,17 +137,7 @@ class AppItem extends StatelessWidget {
             ),
             onChanged: (_) => onToggle(),
           ),
-          Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-              color: app == null ? primaryContainer : null,
-              image: app == null
-                  ? null
-                  : DecorationImage(image: MemoryImage(app!.icon)),
-            ),
-          ),
+          AppIcon(app: app, size: 40),
           Expanded(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,

@@ -11,6 +11,7 @@ import 'package:smsforward/provider/filter_provider.dart';
 import 'package:smsforward/screens/filter/select_target_app_screen.dart';
 import 'package:smsforward/widgets/channel/channel_type_ui.dart';
 import 'package:smsforward/widgets/custom_long_text_button.dart';
+import 'package:smsforward/widgets/app_icon.dart';
 import 'package:smsforward/widgets/custom_switch.dart';
 import 'package:smsforward/widgets/filter/channel_required_notice.dart';
 import 'package:smsforward/widgets/form_field_row.dart';
@@ -286,18 +287,8 @@ class _AppItem extends StatelessWidget {
     return Row(
       spacing: 10,
       children: [
-        Container(
-          width: 30,
-          height: 30,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
-            color: app == null ? primaryContainer : null,
-            image: app == null
-                ? null
-                : DecorationImage(image: MemoryImage(app!.icon)),
-          ),
-        ),
-        Text(app == null ? '모든 앱' : app!.appName, style: textStyleW500()),
+        AppIcon(app: app),
+        Text(app?.appName ?? '모든 앱', style: textStyleW500()),
       ],
     );
   }
